@@ -122,7 +122,7 @@ model Question {
   answer      String
   createdAt   DateTime @default(now())
 
-  Assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+  assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
 }
 
 model AssessmentResult {
@@ -133,7 +133,7 @@ model AssessmentResult {
   createdAt   DateTime @default(now())
 
   user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
-  Assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+  assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
 }
 
 model ForumPost {
@@ -184,5 +184,5 @@ model Role {
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  UserRole  UserRole[]
+  userRole  UserRole[]
 }

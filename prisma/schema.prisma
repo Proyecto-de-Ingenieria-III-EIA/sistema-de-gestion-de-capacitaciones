@@ -64,7 +64,7 @@ model Training {
   description  String
   isHidden     Boolean            @default(false)
   materials    TrainingMaterial[]
-  Assessments   Assessment[]
+  assessments   Assessment[]
   enrollments  Enrollment[]
   forumPosts   ForumPost[]
   instructorId String

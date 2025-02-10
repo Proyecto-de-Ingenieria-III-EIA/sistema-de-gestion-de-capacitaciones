@@ -14,15 +14,27 @@ model User {
   emailVerified DateTime?
   image         String?
   telefono      String?
-  role          Role?     @relation(fields: [roleId], references: [id])
-  roleId        String?
-  accounts      Account[]
-  sessions      Session[]
+  area          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  trainings       Training[]
+  roles           UserRole[]
+  accounts        Account[]
+  sessions        Session[]
+  Enrollment      Enrollment[]
+  AssessmentResult AssessmentResult[]
+  ForumPost       ForumPost[]
+  Comment         Comment[]
+}
 
-  trainings Training[]
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
 }
 
 model Account {
@@ -41,25 +53,120 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([provider, providerAccountId])
 }
 
 model Training {
-  id          String  @id @default(cuid())
-  name        String
-  description String
+  id           String             @id @unique @default(cuid())
+  title        String
+  description  String
+  isHidden     Boolean            @default(false)
+  materials    TrainingMaterial[]
+  Assessments   Assessment[]
+  enrollments  Enrollment[]
+  forumPosts   ForumPost[]
   instructorId String
-  instructor   User    @relation(fields: [instructorId], references: [id])
-  
+
+  instructor User     @relation(fields: [instructorId], references: [id], onUpdate: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model TrainingMaterial {
+  id         String   @id @unique @default(cuid())
+  trainingId String
+  fileType   String
+  fileUrl    String
+  createdAt  DateTime @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+}
+
+model Enrollment {
+  id         String           @id @unique @default(cuid())
+  trainingId String
+  userId     String
+  status     EnrollmentStatus @default(PENDING)
+
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Assessment {
+  id         String     @id @unique @default(cuid())
+  trainingId String
+  title      String
+  questions  Question[]
+  createdAt  DateTime   @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+
+  AssessmentResult AssessmentResult[]
+}
+
+model Question {
+  id          String   @id @unique @default(cuid())
+  AssessmentId String
+  question    String
+  options     String[]
+  answer      String
+  createdAt   DateTime @default(now())
+
+  Assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+}
+
+model AssessmentResult {
+  id          String   @id @unique @default(cuid())
+  AssessmentId String
+  userId      String
+  score       Int
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  Assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+}
+
+model ForumPost {
+  id         String    @id @unique @default(cuid())
+  trainingId String
+  userId     String
+  title      String
+  content    String
+  isActive  Boolean   @default(true)
+  comments   Comment[]
+  createdAt  DateTime  @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+}
+
+model Comment {
+  id          String   @id @unique @default(cuid())
+  forumPostId String
+  userId      String
+  content     String
+  isActive   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  forumPost ForumPost @relation(fields: [forumPostId], references: [id], onUpdate: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
 }
 
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -72,10 +179,10 @@ enum Enum_RoleName {
 }
 
 model Role {
-  id    String        @id @default(cuid())
-  name  Enum_RoleName
-  users User[]
+  id   String        @id @default(cuid())
+  name Enum_RoleName
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  UserRole  UserRole[]
 }

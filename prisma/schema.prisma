@@ -18,23 +18,14 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  trainings       Training[]
-  roles           UserRole[]
-  accounts        Account[]
-  sessions        Session[]
-  Enrollment      Enrollment[]
+  trainings        Training[]
+  roles            Role[]
+  accounts         Account[]
+  sessions         Session[]
+  Enrollment       Enrollment[]
   AssessmentResult AssessmentResult[]
-  ForumPost       ForumPost[]
-  Comment         Comment[]
-}
-
-model UserRole {
-  userId String
-  roleId String
-  user   User   @relation(fields: [userId], references: [id])
-  role   Role   @relation(fields: [roleId], references: [id])
-
-  @@id([userId, roleId])
+  ForumPost        ForumPost[]
+  Comment          Comment[]
 }
 
 model Account {
@@ -64,7 +55,7 @@ model Training {
   description  String
   isHidden     Boolean            @default(false)
   materials    TrainingMaterial[]
-  assessments   Assessment[]
+  assessments  Assessment[]
   enrollments  Enrollment[]
   forumPosts   ForumPost[]
   instructorId String
@@ -115,24 +106,24 @@ model Assessment {
 }
 
 model Question {
-  id          String   @id @unique @default(cuid())
+  id           String   @id @unique @default(cuid())
   AssessmentId String
-  question    String
-  options     String[]
-  answer      String
-  createdAt   DateTime @default(now())
+  question     String
+  options      String[]
+  answer       String
+  createdAt    DateTime @default(now())
 
   assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
 }
 
 model AssessmentResult {
-  id          String   @id @unique @default(cuid())
+  id           String   @id @unique @default(cuid())
   AssessmentId String
-  userId      String
-  score       Int
-  createdAt   DateTime @default(now())
+  userId       String
+  score        Int
+  createdAt    DateTime @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onUpdate: Cascade)
   assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
 }
 
@@ -142,7 +133,7 @@ model ForumPost {
   userId     String
   title      String
   content    String
-  isActive  Boolean   @default(true)
+  isActive   Boolean   @default(true)
   comments   Comment[]
   createdAt  DateTime  @default(now())
 
@@ -155,7 +146,7 @@ model Comment {
   forumPostId String
   userId      String
   content     String
-  isActive   Boolean  @default(true)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
   forumPost ForumPost @relation(fields: [forumPostId], references: [id], onUpdate: Cascade)
@@ -184,5 +175,6 @@ model Role {
 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  userRole  UserRole[]
+
+  User User[]
 }

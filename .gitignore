@@ -26,6 +26,7 @@
 
 #bun
 bun.lockb
+bun.*
 
 # debug
 npm-debug.log*

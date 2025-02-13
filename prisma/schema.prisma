@@ -15,17 +15,18 @@ model User {
   image         String?
   telefono      String?
   area          String?
+  roleId        Int    @unique @default(1)
+  role          Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  trainings        Training[]
-  roles            Role[]
-  accounts         Account[]
-  sessions         Session[]
-  Enrollment       Enrollment[]
-  AssessmentResult AssessmentResult[]
-  ForumPost        ForumPost[]
-  Comment          Comment[]
+  trainings         Training[]
+  accounts          Account[]
+  sessions          Session[]
+  enrollments       Enrollment[]
+  assessmentResults AssessmentResult[]
+  forumPosts        ForumPost[]
+  comments          Comment[]
 }
 
 model Account {
@@ -62,6 +63,7 @@ model Training {
 
   instructor User     @relation(fields: [instructorId], references: [id], onUpdate: Cascade)
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model TrainingMaterial {
@@ -70,6 +72,7 @@ model TrainingMaterial {
   fileType   String
   fileUrl    String
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
 }
@@ -99,32 +102,35 @@ model Assessment {
   title      String
   questions  Question[]
   createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
 
-  AssessmentResult AssessmentResult[]
+  assessmentResults AssessmentResult[]
 }
 
 model Question {
   id           String   @id @unique @default(cuid())
-  AssessmentId String
+  assessmentId String
   question     String
   options      String[]
   answer       String
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade)
 }
 
 model AssessmentResult {
   id           String   @id @unique @default(cuid())
-  AssessmentId String
+  assessmentId String
   userId       String
   score        Int
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user       User       @relation(fields: [userId], references: [id], onUpdate: Cascade)
-  assessment Assessment @relation(fields: [AssessmentId], references: [id], onUpdate: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade)
 }
 
 model ForumPost {
@@ -136,6 +142,7 @@ model ForumPost {
   isActive   Boolean   @default(true)
   comments   Comment[]
   createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
   user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade)
@@ -148,6 +155,7 @@ model Comment {
   content     String
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   forumPost ForumPost @relation(fields: [forumPostId], references: [id], onUpdate: Cascade)
   user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
@@ -170,11 +178,10 @@ enum Enum_RoleName {
 }
 
 model Role {
-  id   String        @id @default(cuid())
-  name Enum_RoleName
+  id    Int        @id @default(autoincrement())
+  name  Enum_RoleName
+  users     User?
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  User User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

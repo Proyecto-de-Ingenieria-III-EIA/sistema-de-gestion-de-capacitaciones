@@ -1,13 +1,21 @@
 import gql from 'graphql-tag';
 
 const userTypes = gql`
-  type Query {
-    users: [User!]!
+  type User {
+    id: ID
+    name: String
+    email: String
+    emailVerified: DateTime
+    image: String
   }
 
-  type User {
-    name: String
-    username: String
+  type Query {
+    getUsers: [User]
+    getUserByEmail(email: String): User
+  }
+
+  type Mutation {
+    updateUser: User
   }
 `;
 

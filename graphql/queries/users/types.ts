@@ -7,6 +7,7 @@ const userTypes = gql`
     email: String
     emailVerified: DateTime
     image: String
+    sessions: [Session]
   }
 
   type Query {

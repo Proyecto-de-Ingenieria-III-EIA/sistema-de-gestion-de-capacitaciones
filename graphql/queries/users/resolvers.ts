@@ -1,8 +1,19 @@
+import { PrismaClient } from '@prisma/client';
+
 interface UserByEmailInput {
   email: string;
 }
 
 const userResolvers = {
+  User: {
+    sessions: async (parent, args, { db }) => {
+      return await db.session.findMany({
+        where: {
+          userId: parent.id,
+        },
+      });
+    },
+  },
   Query: {
     getUsers: async (parent, args, { db }) => {
       return await db.user.findMany();

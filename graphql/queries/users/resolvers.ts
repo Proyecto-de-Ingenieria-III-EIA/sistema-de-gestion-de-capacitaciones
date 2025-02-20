@@ -1,9 +1,18 @@
-const users = [{ name: 'Foo Bar', username: 'foobar' }];
+interface UserByEmailInput {
+  email: string;
+}
 
 const userResolvers = {
   Query: {
-    users() {
-      return users;
+    getUsers: async (parent, args, { db }) => {
+      return await db.user.findMany();
+    },
+    getUserByEmail: async (parent, args: UserByEmailInput, { db }) => {
+      return await db.user.findUnique({
+        where: {
+          email: args.email,
+        },
+      });
     },
   },
 };

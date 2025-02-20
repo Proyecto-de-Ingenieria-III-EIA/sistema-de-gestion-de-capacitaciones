@@ -1,24 +1,12 @@
 import { resolvers, types } from '@/graphql';
+import { prisma } from '@/prisma';
+import { Context, AuthData } from '@/types';
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { Enum_RoleName, PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const prisma = new PrismaClient();
-
 export const schema = makeExecutableSchema({ typeDefs: types, resolvers });
-
-interface AuthData {
-  email: string;
-  role: Enum_RoleName;
-  expires: Date;
-}
-
-interface Context {
-  db: PrismaClient;
-  authData: AuthData;
-}
 
 const server = new ApolloServer<Context>({
   schema,

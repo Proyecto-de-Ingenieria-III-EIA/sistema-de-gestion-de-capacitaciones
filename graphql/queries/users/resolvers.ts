@@ -1,11 +1,12 @@
-import { Enum_RoleName, PrismaClient, User } from '@prisma/client';
+import { Resolver } from '@/types';
+import { Enum_RoleName, Role, User } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 
 interface UserByEmailInput {
   email: string;
 }
 
-const userResolvers = {
+const userResolvers: Resolver = {
   User: {
     sessions: async (parent: User, args, { db }) => {
       return await db.session.findMany({
@@ -15,14 +16,12 @@ const userResolvers = {
       });
     },
     role: async (parent: User, args, { db }) => {
-      const role = await db.$queryRaw`
+      const role = (await db.$queryRaw`
       select r.* from ejemplo_proyecto."Role" r
         join ejemplo_proyecto."User" u
             on u."roleId" = r.id
       where u.id = ${parent.id}
-      `;
-
-      console.log(role);
+        `) as Role[];
 
       return role[0];
     },
@@ -51,8 +50,6 @@ const userResolvers = {
   },
   Mutation: {
     updateUserRole: async (parent, args, { db }) => {
-      console.log(args);
-
       const role = await db.role.findFirst({
         where: {
           name: args.name,
@@ -64,7 +61,7 @@ const userResolvers = {
           id: args.id,
         },
         data: {
-          roleId: role.id,
+          roleId: role?.id ?? '',
         },
       });
     },

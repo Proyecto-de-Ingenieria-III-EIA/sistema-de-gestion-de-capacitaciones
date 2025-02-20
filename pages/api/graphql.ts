@@ -9,13 +9,15 @@ const prisma = new PrismaClient();
 
 export const schema = makeExecutableSchema({ typeDefs: types, resolvers });
 
+interface AuthData {
+  email: string;
+  role: Enum_RoleName;
+  expires: Date;
+}
+
 interface Context {
   db: PrismaClient;
-  authData: {
-    email: string;
-    role: Enum_RoleName;
-    expires: Date;
-  };
+  authData: AuthData;
 }
 
 const server = new ApolloServer<Context>({
@@ -26,7 +28,7 @@ export default startServerAndCreateNextHandler(server, {
   context: async (req: NextApiRequest, res: NextApiResponse) => {
     const token = req.headers['session-token'];
 
-    const authData = await prisma.$queryRaw`
+    const authData = (await prisma.$queryRaw`
     select 
     u.email,
     r."name" as "role",
@@ -37,9 +39,7 @@ export default startServerAndCreateNextHandler(server, {
         join ejemplo_proyecto."Role" r
             on u."roleId" = r.id
     where s."sessionToken" = ${token}
-    `;
-
-    console.log(authData);
+    `) as AuthData[];
 
     return {
       db: prisma,

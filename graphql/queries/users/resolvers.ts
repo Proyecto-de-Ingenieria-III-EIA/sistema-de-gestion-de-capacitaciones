@@ -1,4 +1,5 @@
-import { PrismaClient, User } from '@prisma/client';
+import { Enum_RoleName, PrismaClient, User } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 
 interface UserByEmailInput {
   email: string;
@@ -13,7 +14,7 @@ const userResolvers = {
         },
       });
     },
-    role: async (parent: User, args, { db }: { db: PrismaClient }) => {
+    role: async (parent: User, args, { db }) => {
       const role = await db.$queryRaw`
       select r.* from ejemplo_proyecto."Role" r
         join ejemplo_proyecto."User" u
@@ -21,14 +22,26 @@ const userResolvers = {
       where u.id = ${parent.id}
       `;
 
+      console.log(role);
+
       return role[0];
     },
   },
   Query: {
-    getUsers: async (parent, args, { db }) => {
+    getUsers: async (parent, args, { db, authData }) => {
+      if (authData.role !== Enum_RoleName.ADMIN) {
+        throw new GraphQLError('Not authorized. Admin role required.');
+      }
       return await db.user.findMany();
     },
-    getUserByEmail: async (parent, args: UserByEmailInput, { db }) => {
+    getUserByEmail: async (
+      parent,
+      args: UserByEmailInput,
+      { db, authData }
+    ) => {
+      if (![Enum_RoleName.ADMIN, Enum_RoleName.USER].includes(authData.role)) {
+        throw new GraphQLError('Not authorized. Admin or User role required.');
+      }
       return await db.user.findUnique({
         where: {
           email: args.email,
@@ -37,7 +50,7 @@ const userResolvers = {
     },
   },
   Mutation: {
-    updateUserRole: async (parent, args, { db }: { db: PrismaClient }) => {
+    updateUserRole: async (parent, args, { db }) => {
       console.log(args);
 
       const role = await db.role.findFirst({

@@ -7,6 +7,8 @@ const userTypes = gql`
     email: String
     emailVerified: DateTime
     image: String
+    sessions: [Session]
+    role: Role
   }
 
   type Query {
@@ -15,7 +17,7 @@ const userTypes = gql`
   }
 
   type Mutation {
-    updateUser: User
+    updateUserRole(id: String, roleName: String): User
   }
 `;
 

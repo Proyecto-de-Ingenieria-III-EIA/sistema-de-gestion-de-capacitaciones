@@ -1,18 +1,14 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
 interface UserByEmailInput {
   email: string;
 }
 
 const userResolvers = {
   Query: {
-    getUsers: async () => {
-      return await prisma.user.findMany();
+    getUsers: async (parent, args, { db }) => {
+      return await db.user.findMany();
     },
-    getUserByEmail: async (parent, args: UserByEmailInput, context) => {
-      return await prisma.user.findUnique({
+    getUserByEmail: async (parent, args: UserByEmailInput, { db }) => {
+      return await db.user.findUnique({
         where: {
           email: args.email,
         },

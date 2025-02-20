@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { User } from '@prisma/client';
 
 interface UserByEmailInput {
   email: string;
@@ -6,7 +6,7 @@ interface UserByEmailInput {
 
 const userResolvers = {
   User: {
-    sessions: async (parent, args, { db }) => {
+    sessions: async (parent: User, args, { db }) => {
       return await db.session.findMany({
         where: {
           userId: parent.id,

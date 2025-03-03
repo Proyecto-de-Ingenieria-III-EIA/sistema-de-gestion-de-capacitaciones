@@ -16,7 +16,7 @@ model User {
   phone         String?
   area          String?
   roleId        Int       @unique @default(1)
-  role          Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  role          Role      @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -61,7 +61,7 @@ model Training {
   forumPosts   ForumPost[]
   instructorId String
 
-  instructor User     @relation(fields: [instructorId], references: [id], onUpdate: Cascade)
+  instructor User     @relation(fields: [instructorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -74,7 +74,7 @@ model TrainingMaterial {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Enrollment {
@@ -83,8 +83,8 @@ model Enrollment {
   userId     String
   status     EnrollmentStatus @default(PENDING)
 
-  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -104,7 +104,7 @@ model Assessment {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
-  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
   assessmentResults AssessmentResult[]
 }
@@ -118,7 +118,7 @@ model Question {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model AssessmentResult {
@@ -129,8 +129,8 @@ model AssessmentResult {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user       User       @relation(fields: [userId], references: [id], onUpdate: Cascade)
-  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model ForumPost {
@@ -144,8 +144,8 @@ model ForumPost {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Comment {
@@ -157,8 +157,8 @@ model Comment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  forumPost ForumPost @relation(fields: [forumPostId], references: [id], onUpdate: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  forumPost ForumPost @relation(fields: [forumPostId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Session {

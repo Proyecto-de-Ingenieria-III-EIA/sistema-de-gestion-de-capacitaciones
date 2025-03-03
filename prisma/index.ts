@@ -1,3 +1,4 @@
+/* eslint-disable import/no-default-export */
 /* eslint-disable no-var */
 /* eslint-disable import/no-mutable-exports */
 /* eslint-disable vars-on-top */

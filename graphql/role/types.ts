@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 const roleTypes = gql`
   enum Enum_RoleName {
     ADMIN
+    INSTRUCTOR
     USER
   }
 
@@ -12,6 +13,17 @@ const roleTypes = gql`
     users: [User]
     createdAt: DateTime
     updatedAt: DateTime
+  }
+
+  ## Queries
+  type Query {
+    # Roles
+    getRoles: [Role]
+  }
+
+  ## Mutations
+  type Mutation {
+    updateUserRole(id: String!, roleName: Enum_RoleName!): User
   }
 `;
 

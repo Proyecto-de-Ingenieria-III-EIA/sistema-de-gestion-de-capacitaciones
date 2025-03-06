@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const queries = {
-  getRoles: async () => prisma.role.findMany(),
+  getRoles: async ({ db }: Context) => db.role.findMany(),
 };

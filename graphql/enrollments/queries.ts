@@ -1,11 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const queries = {
   // Enrollment queries
-  getEnrollments: async () => prisma.enrollment.findMany(),
+  getEnrollments: async ({ db }: Context) => db.enrollment.findMany(),
 
-  getEnrollmentsByUser: async (_: unknown, args: { userId: string }) =>
-    prisma.enrollment.findMany({ where: { userId: args.userId } }),
+  getEnrollmentsByUser: async (
+    _: unknown,
+    args: { userId: string },
+    { db }: Context
+  ) => db.enrollment.findMany({ where: { userId: args.userId } }),
 };

@@ -1,14 +1,13 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const mutations = {
   // Create a new assessment
   createAssessment: async (
     _: unknown,
-    args: { trainingId: string; title: string }
+    args: { trainingId: string; title: string },
+    { db }: Context
   ) =>
-    prisma.assessment.create({
+    db.assessment.create({
       data: {
         trainingId: args.trainingId,
         title: args.title,
@@ -23,9 +22,10 @@ export const mutations = {
       question: string;
       options: string[];
       answer: string;
-    }
+    },
+    { db }: Context
   ) =>
-    prisma.question.create({
+    db.question.create({
       data: {
         assessmentId: args.assessmentId,
         question: args.question,
@@ -37,9 +37,10 @@ export const mutations = {
   // Submit an assessment result
   submitAssessmentResult: async (
     _: unknown,
-    args: { assessmentId: string; userId: string; score: number }
+    args: { assessmentId: string; userId: string; score: number },
+    { db }: Context
   ) =>
-    prisma.assessmentResult.create({
+    db.assessmentResult.create({
       data: {
         assessmentId: args.assessmentId,
         userId: args.userId,

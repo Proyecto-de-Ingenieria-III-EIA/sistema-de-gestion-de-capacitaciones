@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const mutations = {
   // User mutations
@@ -12,9 +10,10 @@ export const mutations = {
       phone?: string;
       area?: string;
       image?: string;
-    }
+    },
+    { db }: Context
   ) =>
-    prisma.user.update({
+    db.user.update({
       where: { id: args.id },
       data: {
         name: args.name,
@@ -24,8 +23,8 @@ export const mutations = {
       },
     }),
 
-  deleteUser: async (_: unknown, args: { id: string }) => {
-    await prisma.user.delete({ where: { id: args.id } });
+  deleteUser: async (_: unknown, args: { id: string }, { db }: Context) => {
+    await db.user.delete({ where: { id: args.id } });
     return true;
   },
 };

@@ -1,11 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const queries = {
   // Forum queries
-  getForumPosts: async () => prisma.forumPost.findMany(),
+  getForumPosts: async ({ db }: Context) => db.forumPost.findMany(),
 
-  getForumPostById: async (_: unknown, args: { id: string }) =>
-    prisma.forumPost.findUnique({ where: { id: args.id } }),
+  getForumPostById: async (_: unknown, args: { id: string }, { db }: Context) =>
+    db.forumPost.findUnique({ where: { id: args.id } }),
 };

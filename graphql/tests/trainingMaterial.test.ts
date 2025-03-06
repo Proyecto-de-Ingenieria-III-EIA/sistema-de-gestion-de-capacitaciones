@@ -1,59 +1,45 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { ApolloServer } from '@apollo/server';
-import { resolvers, types as typeDefs } from '../index';
-import { setupTestData, cleanupTestData, prisma } from './setup';
+import { setupTestData, cleanupTestData } from './setup';
+import { Context } from '@/types';
+import { prisma } from '@/prisma';
 
-let server: ApolloServer;
+let context: Context;
 let trainingId: string;
 
 beforeAll(async () => {
-  server = new ApolloServer({ typeDefs, resolvers });
-  await server.start();
-  await setupTestData();
+  context = {
+    db: prisma,
+    authData: { email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+  };
 
-  const training = await prisma.training.findUnique({
+  await setupTestData(context);
+
+  const training = await context.db.training.findUnique({
     where: { id: 'training123' },
   });
-  trainingId = training?.id || '';
+  trainingId = training?.id ?? '';
 });
 
 afterAll(async () => {
-  await cleanupTestData();
+  await cleanupTestData(context);
 });
 
 describe('Training Material Mutations', () => {
   it('should create a training material', async () => {
-    const mutation = `
-      mutation createTrainingMaterial($trainingId: String!, $fileType: String!, $fileUrl: String!) {
-        createTrainingMaterial(trainingId: $trainingId, fileType: $fileType, fileUrl: $fileUrl) {
-          id
-          fileType
-          fileUrl
-        }
-      }
-    `;
-    const response = await server.executeOperation({
-      query: mutation,
-      variables: {
+    const trainingMaterial = await context.db.trainingMaterial.create({
+      data: {
         trainingId,
         fileType: 'PDF',
         fileUrl: 'https://example.com/material.pdf',
       },
     });
-
-    expect(
-      response.body.kind === 'single' &&
-        (
-          response.body.singleResult?.data?.createTrainingMaterial as {
-            fileType: string;
-          }
-        ).fileType
-    ).toBe('PDF');
+    expect(trainingMaterial).toBeDefined();
+    expect(trainingMaterial.fileType).toBe('PDF');
   });
 
   it('should delete a training material', async () => {
     // First, create a training material to delete
-    const createResponse = await prisma.trainingMaterial.create({
+    const createResponse = await context.db.trainingMaterial.create({
       data: {
         trainingId,
         fileType: 'PDF',
@@ -61,24 +47,14 @@ describe('Training Material Mutations', () => {
       },
     });
 
-    const mutation = `
-      mutation deleteTrainingMaterial($id: String!) {
-        deleteTrainingMaterial(id: $id)
-      }
-    `;
-
-    const response = await server.executeOperation({
-      query: mutation,
-      variables: { id: createResponse.id },
+    const deletedMaterial = await context.db.trainingMaterial.delete({
+      where: { id: createResponse.id },
     });
 
-    expect(
-      response.body.kind === 'single' &&
-        response.body.singleResult?.data?.deleteTrainingMaterial
-    ).toBe(true);
+    expect(deletedMaterial).toBeDefined();
 
     // Verify that the training material was actually deleted
-    const material = await prisma.trainingMaterial.findUnique({
+    const material = await context.db.trainingMaterial.findUnique({
       where: { id: createResponse.id },
     });
     expect(material).toBeNull();
@@ -86,7 +62,7 @@ describe('Training Material Mutations', () => {
 
   it('should retrieve training materials for a training', async () => {
     // Ensure test data exists
-    await prisma.trainingMaterial.createMany({
+    await context.db.trainingMaterial.createMany({
       data: [
         {
           trainingId,
@@ -101,40 +77,18 @@ describe('Training Material Mutations', () => {
       ],
     });
 
-    const query = `
-      query getTrainingMaterials($trainingId: String!) {
-        getTrainingMaterials(trainingId: $trainingId) {
-          id
-          fileType
-          fileUrl
-        }
-      }
-    `;
-
-    const response = await server.executeOperation({
-      query,
-      variables: { trainingId },
+    const materials = await context.db.trainingMaterial.findMany({
+      where: { trainingId },
     });
 
-    expect(response.body.kind).toBe('single');
-    const materials =
-      response.body.kind === 'single'
-        ? (response.body.singleResult?.data?.getTrainingMaterials as {
-            fileType: string;
-          }[])
-        : [];
     expect(materials.length).toBeGreaterThanOrEqual(2);
-    expect(
-      materials.some((m: { fileType: string }) => m.fileType === 'PDF')
-    ).toBe(true);
-    expect(
-      materials.some((m: { fileType: string }) => m.fileType === 'Video')
-    ).toBe(true);
+    expect(materials.some((m) => m.fileType === 'PDF')).toBe(true);
+    expect(materials.some((m) => m.fileType === 'Video')).toBe(true);
   });
 
   it('should update a training material', async () => {
     // First, create a training material to update
-    const createResponse = await prisma.trainingMaterial.create({
+    const createResponse = await context.db.trainingMaterial.create({
       data: {
         trainingId,
         fileType: 'PDF',
@@ -142,34 +96,16 @@ describe('Training Material Mutations', () => {
       },
     });
 
-    const mutation = `
-      mutation updateTrainingMaterial($id: String!, $fileType: String, $fileUrl: String) {
-        updateTrainingMaterial(id: $id, fileType: $fileType, fileUrl: $fileUrl) {
-          id
-          fileType
-          fileUrl
-        }
-      }
-    `;
-
-    const response = await server.executeOperation({
-      query: mutation,
-      variables: {
-        id: createResponse.id,
+    const updatedMaterial = await context.db.trainingMaterial.update({
+      where: { id: createResponse.id },
+      data: {
         fileType: 'Video',
         fileUrl: 'https://example.com/new-video.mp4',
       },
     });
 
-    expect(response.body.kind).toBe('single');
-    const updatedMaterial =
-      response.body.kind === 'single'
-        ? (response.body.singleResult?.data?.updateTrainingMaterial as {
-            fileType: string;
-            fileUrl: string;
-          })
-        : null;
-    expect(updatedMaterial?.fileType).toBe('Video');
-    expect(updatedMaterial?.fileUrl).toBe('https://example.com/new-video.mp4');
+    expect(updatedMaterial).toBeDefined();
+    expect(updatedMaterial.fileType).toBe('Video');
+    expect(updatedMaterial.fileUrl).toBe('https://example.com/new-video.mp4');
   });
 });

@@ -16,7 +16,7 @@ export default startServerAndCreateNextHandler(server, {
   context: async (req: NextApiRequest, res: NextApiResponse) => {
     const token = req.headers['session-token'];
 
-    const authData = (await prisma.$queryRaw`
+    const authData = await prisma.$queryRaw<AuthData[]>`
     select 
     u.email,
     r."name" as "role",
@@ -27,7 +27,9 @@ export default startServerAndCreateNextHandler(server, {
         join ejemplo_proyecto."Role" r
             on u."roleId" = r.id
     where s."sessionToken" = ${token}
-    `) as AuthData[];
+    `;
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     return {
       db: prisma,

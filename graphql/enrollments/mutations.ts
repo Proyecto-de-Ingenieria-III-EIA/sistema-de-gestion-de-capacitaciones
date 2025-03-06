@@ -1,14 +1,14 @@
-import { PrismaClient, EnrollmentStatus } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
+import { EnrollmentStatus } from '@prisma/client';
 
 export const mutations = {
   // Enrollment mutations
   enrollUser: async (
     _: unknown,
-    args: { userId: string; trainingId: string }
+    args: { userId: string; trainingId: string },
+    { db }: Context
   ) =>
-    prisma.enrollment.create({
+    db.enrollment.create({
       data: {
         userId: args.userId,
         trainingId: args.trainingId,
@@ -18,9 +18,10 @@ export const mutations = {
 
   updateEnrollmentStatus: async (
     _: unknown,
-    args: { id: string; status: EnrollmentStatus }
+    args: { id: string; status: EnrollmentStatus },
+    { db }: Context
   ) =>
-    prisma.enrollment.update({
+    db.enrollment.update({
       where: { id: args.id },
       data: { status: args.status },
     }),

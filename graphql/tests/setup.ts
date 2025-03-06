@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { Context } from '@/types';
 
-export const prisma = new PrismaClient();
-
-export const setupTestData = async () => {
+export const setupTestData = async (context: Context) => {
+  const { db } = context;
   // Create an instructor
-  const instructor = await prisma.user.create({
+  const instructor = await db.user.create({
     data: {
       id: 'instructor123',
       name: 'Jane Doe',
@@ -17,7 +16,7 @@ export const setupTestData = async () => {
   });
 
   // Create a test user
-  await prisma.user.create({
+  await db.user.create({
     data: {
       id: 'user123',
       name: 'John Doe',
@@ -30,7 +29,7 @@ export const setupTestData = async () => {
   });
 
   // Create a test training session
-  await prisma.training.create({
+  await db.training.create({
     data: {
       id: 'training123',
       title: 'AI Fundamentals',
@@ -38,7 +37,7 @@ export const setupTestData = async () => {
       instructorId: instructor.id,
     },
   });
-  await prisma.forumPost.create({
+  await db.forumPost.create({
     data: {
       id: 'forum123',
       title: 'Sample Forum Post',
@@ -49,7 +48,7 @@ export const setupTestData = async () => {
   });
 
   // Create a comment
-  await prisma.comment.create({
+  await db.comment.create({
     data: {
       id: 'comment123',
       content: 'Sample comment',
@@ -59,11 +58,11 @@ export const setupTestData = async () => {
   });
 };
 
-export const cleanupTestData = async () => {
-  await prisma.comment.deleteMany({});
-  await prisma.forumPost.deleteMany({});
-  await prisma.trainingMaterial.deleteMany({});
-  await prisma.training.deleteMany({});
-  await prisma.user.deleteMany({});
-  await prisma.$disconnect();
+export const cleanupTestData = async ({ db }: Context) => {
+  await db.comment.deleteMany({});
+  await db.forumPost.deleteMany({});
+  await db.trainingMaterial.deleteMany({});
+  await db.training.deleteMany({});
+  await db.user.deleteMany({});
+  await db.$disconnect();
 };

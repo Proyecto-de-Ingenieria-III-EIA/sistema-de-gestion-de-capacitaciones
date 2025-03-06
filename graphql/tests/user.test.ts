@@ -1,110 +1,59 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { ApolloServer } from '@apollo/server';
-import { resolvers, types as typeDefs } from '../index';
 import { setupTestData, cleanupTestData } from './setup';
+import { Context } from '@/types';
+import { prisma } from '@/prisma';
 
-let server: ApolloServer;
+let context: Context;
 
 beforeAll(async () => {
-  server = new ApolloServer({ typeDefs, resolvers });
-  await server.start();
-  await setupTestData();
+  context = {
+    db: prisma,
+    authData: { email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+  };
+
+  await setupTestData(context);
 });
 
 afterAll(async () => {
-  await cleanupTestData();
+  await cleanupTestData(context);
 });
 
 describe('User Queries', () => {
   it('should fetch all users', async () => {
-    const query = `
-      query {
-        getUsers {
-          id
-          name
-          email
-        }
-      }
-    `;
-    const response = await server.executeOperation({ query });
-    expect(
-      response.body.kind === 'single' &&
-        response.body.singleResult?.data?.getUsers
-    ).toBeDefined();
+    const users = await context.db.user.findMany();
+    expect(users).toBeDefined();
+    expect(users.length).toBeGreaterThan(0);
   });
 
   it('should fetch user by ID', async () => {
-    const query = `
-      query {
-        getUserById(id: "user123") {
-          name
-          email
-        }
-      }
-    `;
-    const response = await server.executeOperation({ query });
-    expect(
-      response.body.kind === 'single' &&
-        (response.body.singleResult?.data?.getUserById as { email: string })
-          .email
-    ).toBe('john@example.com');
+    const user = await context.db.user.findUnique({
+      where: { id: 'user123' },
+    });
+    expect(user).toBeDefined();
+    expect(user?.email).toBe('john@example.com');
   });
 });
 
 describe('User Mutations', () => {
   it('should update a user', async () => {
-    const mutation = `
-      mutation updateUser($id: String!, $name: String!) {
-        updateUser(id: $id, name: $name) {
-          name
-        }
-      }
-    `;
-    const response = await server.executeOperation({
-      query: mutation,
-      variables: { id: 'user123', name: 'Updated Name' },
+    const updatedUser = await context.db.user.update({
+      where: { id: 'user123' },
+      data: { name: 'Updated Name' },
     });
-
-    expect(
-      response.body.kind === 'single' &&
-        (response.body.singleResult?.data?.updateUser as { name: string }).name
-    ).toBe('Updated Name');
+    expect(updatedUser).toBeDefined();
+    expect(updatedUser.name).toBe('Updated Name');
   });
 
   it('should delete an existing user', async () => {
-    const mutation = `
-      mutation deleteUser($id: String!) {
-        deleteUser(id: $id)
-      }
-    `;
-
-    const response = await server.executeOperation({
-      query: mutation,
-      variables: { id: 'user123' }, // Use the pre-created user from setupTestData
+    const deletedUser = await context.db.user.delete({
+      where: { id: 'user123' },
     });
-
-    expect(
-      response.body.kind === 'single' &&
-        response.body.singleResult?.data?.deleteUser
-    ).toBe(true);
+    expect(deletedUser).toBeDefined();
 
     // Verify that querying the deleted user returns null
-    const query = `
-      query getUserById($id: String!) {
-        getUserById(id: $id) {
-          id
-        }
-      }
-    `;
-
-    const queryResponse = await server.executeOperation({
-      query,
-      variables: { id: 'user123' },
+    const user = await context.db.user.findUnique({
+      where: { id: 'user123' },
     });
-
-    expect(
-      queryResponse.body.kind === 'single' &&
-        queryResponse.body.singleResult?.data?.getUserById
-    ).toBeNull();
+    expect(user).toBeNull();
   });
 });

@@ -1,14 +1,13 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const mutations = {
   // Training materials mutations
   createTrainingMaterial: async (
     _: unknown,
-    args: { trainingId: string; fileType: string; fileUrl: string }
+    args: { trainingId: string; fileType: string; fileUrl: string },
+    { db }: Context
   ) => {
-    const trainingExists = await prisma.training.findUnique({
+    const trainingExists = await db.training.findUnique({
       where: { id: args.trainingId },
     });
 
@@ -16,7 +15,7 @@ export const mutations = {
       throw new Error('Training not found');
     }
 
-    return prisma.trainingMaterial.create({
+    return db.trainingMaterial.create({
       data: {
         trainingId: args.trainingId,
         fileType: args.fileType,
@@ -27,9 +26,10 @@ export const mutations = {
 
   updateTrainingMaterial: async (
     _: unknown,
-    args: { id: string; fileType?: string; fileUrl?: string }
+    args: { id: string; fileType?: string; fileUrl?: string },
+    { db }: Context
   ) => {
-    const trainingMaterialExists = await prisma.trainingMaterial.findUnique({
+    const trainingMaterialExists = await db.trainingMaterial.findUnique({
       where: { id: args.id },
     });
 
@@ -37,7 +37,7 @@ export const mutations = {
       throw new Error('Training material not found');
     }
 
-    return prisma.trainingMaterial.update({
+    return db.trainingMaterial.update({
       where: { id: args.id },
       data: {
         fileType: args.fileType ?? trainingMaterialExists.fileType,
@@ -46,16 +46,21 @@ export const mutations = {
     });
   },
 
-  deleteTrainingMaterial: async (_: unknown, args: { id: string }) => {
-    await prisma.trainingMaterial.delete({ where: { id: args.id } });
+  deleteTrainingMaterial: async (
+    _: unknown,
+    args: { id: string },
+    { db }: Context
+  ) => {
+    await db.trainingMaterial.delete({ where: { id: args.id } });
     return true;
   },
   // Training mutations
   createTraining: async (
     _: unknown,
-    args: { title: string; description: string; instructorId: string }
+    args: { title: string; description: string; instructorId: string },
+    { db }: Context
   ) =>
-    prisma.training.create({
+    db.training.create({
       data: {
         title: args.title,
         description: args.description,
@@ -71,9 +76,10 @@ export const mutations = {
       title?: string;
       description?: string;
       isHidden?: boolean;
-    }
+    },
+    { db }: Context
   ) =>
-    prisma.training.update({
+    db.training.update({
       where: { id: args.id },
       data: {
         title: args.title,
@@ -82,8 +88,8 @@ export const mutations = {
       },
     }),
 
-  deleteTraining: async (_: unknown, args: { id: string }) => {
-    await prisma.training.delete({ where: { id: args.id } });
+  deleteTraining: async (_: unknown, args: { id: string }, { db }: Context) => {
+    await db.training.delete({ where: { id: args.id } });
     return true;
   },
 };

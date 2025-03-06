@@ -1,14 +1,18 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Context } from '@/types';
 
 export const mutations = {
   // Forum mutations
   createForumPost: async (
     _: unknown,
-    args: { title: string; content: string; userId: string; trainingId: string }
+    args: {
+      title: string;
+      content: string;
+      userId: string;
+      trainingId: string;
+    },
+    { db }: Context
   ) =>
-    prisma.forumPost.create({
+    db.forumPost.create({
       data: {
         title: args.title,
         content: args.content,
@@ -19,9 +23,10 @@ export const mutations = {
 
   updateForumPost: async (
     _: unknown,
-    args: { id: string; title?: string; content?: string }
+    args: { id: string; title?: string; content?: string },
+    { db }: Context
   ) =>
-    prisma.forumPost.update({
+    db.forumPost.update({
       where: { id: args.id },
       data: {
         title: args.title,
@@ -29,17 +34,22 @@ export const mutations = {
       },
     }),
 
-  deleteForumPost: async (_: unknown, args: { id: string }) => {
-    await prisma.forumPost.delete({ where: { id: args.id } });
+  deleteForumPost: async (
+    _: unknown,
+    args: { id: string },
+    { db }: Context
+  ) => {
+    await db.forumPost.delete({ where: { id: args.id } });
     return true;
   },
 
   // Comment mutations
   createComment: async (
     _: unknown,
-    args: { content: string; userId: string; forumPostId: string }
+    args: { content: string; userId: string; forumPostId: string },
+    { db }: Context
   ) =>
-    prisma.comment.create({
+    db.comment.create({
       data: {
         content: args.content,
         userId: args.userId,
@@ -47,8 +57,8 @@ export const mutations = {
       },
     }),
 
-  deleteComment: async (_: unknown, args: { id: string }) => {
-    await prisma.comment.delete({ where: { id: args.id } });
+  deleteComment: async (_: unknown, args: { id: string }, { db }: Context) => {
+    await db.comment.delete({ where: { id: args.id } });
     return true;
   },
 };

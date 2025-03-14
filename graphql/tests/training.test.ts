@@ -47,6 +47,21 @@ describe('Training Mutations', () => {
     expect(newTraining.title).toBe('ML Basics');
   });
 
+  it('should update a training', async () => {
+    const updateTraining = await context.db.training.update({
+      where: { id: 'training123'},
+      data: {
+        title: 'Updated ML Basics',
+        description: 'Updated Intro to ML',
+        isHidden: false,
+      },
+    });
+    expect(updateTraining).toBeDefined();
+    expect(updateTraining.title).toBe('Updated ML Basics');
+    expect(updateTraining.description).toBe('Updated Intro to ML');
+    expect(updateTraining.isHidden).toBe(false);
+  })
+
   it('should delete a training', async () => {
     const deletedTraining = await context.db.training.delete({
       where: { id: 'training123' },
@@ -60,3 +75,5 @@ describe('Training Mutations', () => {
     expect(training).toBeNull();
   });
 });
+
+

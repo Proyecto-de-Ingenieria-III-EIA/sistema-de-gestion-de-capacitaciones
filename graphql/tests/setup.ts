@@ -2,6 +2,20 @@ import { Context } from '@/types';
 
 export const setupTestData = async (context: Context) => {
   const { db } = context;
+
+  await db.role.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, name: 'USER' },
+  });
+
+  await db.role.upsert({
+    where: { id: 2 },
+    update: {},
+    create: { id: 2, name: 'INSTRUCTOR' },
+  });
+
+
   // Create an instructor
   const instructor = await db.user.create({
     data: {
@@ -28,8 +42,19 @@ export const setupTestData = async (context: Context) => {
     },
   });
 
-  // Create a test training session
-  await db.training.create({
+  await db.user.create({
+    data: {
+      id: 'instructor456',
+      name: 'Alice Smith',
+      email: 'instructor2@example.com',
+      phone: '0987654321',
+      area: 'Teaching',
+      image: 'instructor2.jpg',
+      roleId: 2,
+    }
+  });
+
+  const training = await db.training.create({
     data: {
       id: 'training123',
       title: 'AI Fundamentals',
@@ -37,6 +62,12 @@ export const setupTestData = async (context: Context) => {
       instructorId: instructor.id,
     },
   });
+
+  console.log("✅ Created training:", training);
+
+
+  // Create a test training session
+
   await db.forumPost.create({
     data: {
       id: 'forum123',
@@ -64,5 +95,6 @@ export const cleanupTestData = async ({ db }: Context) => {
   await db.trainingMaterial.deleteMany({});
   await db.training.deleteMany({});
   await db.user.deleteMany({});
+  await db.role.deleteMany({});
   await db.$disconnect();
 };

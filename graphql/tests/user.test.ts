@@ -44,6 +44,22 @@ describe('User Mutations', () => {
     expect(updatedUser.name).toBe('Updated Name');
   });
 
+  it('should assign a training to a user', async () => {
+    const assignedUser = await context.db.user.update({
+      where: { id: 'user123' },
+      data: {
+        trainings: {
+          connect: { id: 'training123' },
+        },
+      },
+      include: { trainings: true },
+    });
+
+    expect(assignedUser).toBeDefined();
+    expect(assignedUser.trainings.length).toBeGreaterThan(0);
+    expect(assignedUser.trainings.some(t => t.id === 'training123')).toBe(true);
+  })
+
   it('should delete an existing user', async () => {
     const deletedUser = await context.db.user.delete({
       where: { id: 'user123' },

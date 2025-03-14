@@ -92,4 +92,41 @@ export const mutations = {
     await db.training.delete({ where: { id: args.id } });
     return true;
   },
+
+  // Instructor
+  assignInstructorToTraining: async (
+    _: unknown,
+    args: { trainingId: string; instructorId: string },
+    { db }: Context
+  ) => {
+    const instructor = await db.user.findUnique({
+      where: { id: args.instructorId },
+      select: { role: {select: {name: true}}},
+    });
+
+    //verificar que solo podamos agregar instructores
+    if (!instructor || instructor.role.name !== 'INSTRUCTOR') {
+      throw new Error('Instructor not found or not an instructor');
+    }
+
+    const existingTraining = await db.training.findUnique({
+      where: { id: args.trainingId },
+      select: { instructorId: true },
+    });
+
+    //verifica si ya tiene un instructor para cambiarlo
+    if(existingTraining?.instructorId) {
+      return db.training.update({
+        where: { id: args.trainingId},
+        data: { instructorId: args.instructorId},
+      });
+    }
+
+    // si esta en null, lo agrega normalmente
+    return db.training.update({
+      where: { id: args.trainingId},
+      data: { instructorId: args.instructorId},
+    })
+  }
+  
 };

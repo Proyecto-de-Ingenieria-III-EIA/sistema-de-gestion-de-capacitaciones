@@ -15,7 +15,7 @@ model User {
   image         String?
   phone         String?
   area          String?
-  roleId        Int       @unique @default(1)
+  roleId        Int       @default(1)
   role          Role      @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -55,6 +55,7 @@ model Training {
   title        String
   description  String
   isHidden     Boolean            @default(false)
+  isPublic     Boolean            @default(true)
   materials    TrainingMaterial[]
   assessments  Assessment[]
   enrollments  Enrollment[]
@@ -180,7 +181,7 @@ enum Enum_RoleName {
 model Role {
   id    Int           @id @default(autoincrement())
   name  Enum_RoleName
-  users User?
+  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -2,6 +2,7 @@
 import { PrismaClient, Enum_RoleName } from '@prisma/client';
 
 interface AuthData {
+  id: string;
   email: string;
   role: Enum_RoleName;
   expires: Date;

@@ -67,5 +67,12 @@ export const trainingTypes = gql`
     ): Training
 
     deleteTraining(id: String!): Boolean
+
+    assignInstructorToTraining(
+      trainingId: String!
+      instructorId: String!
+    ): Training
+
+    toggleTrainingVisibility(trainingId: String!): Training
   }
 `;

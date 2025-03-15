@@ -1,12 +1,15 @@
 import { Context } from '@/types';
+import { validateRole } from '@/utils/validateRole';
 
 export const mutations = {
   // Training materials mutations
   createTrainingMaterial: async (
     _: unknown,
     args: { trainingId: string; fileType: string; fileUrl: string },
-    { db }: Context
+    { db, authData }: Context
   ) => {
+
+    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
     const trainingExists = await db.training.findUnique({
       where: { id: args.trainingId },
     });
@@ -127,6 +130,32 @@ export const mutations = {
       where: { id: args.trainingId},
       data: { instructorId: args.instructorId},
     })
-  }
+  },
+
+  toggleTrainingVisibility: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+
+    const training = await db.training.findUnique({
+      where: { id: args.trainingId },
+      select: { isHidden: true }, // nos significa que isHidden sea true, sino que va a buscar solo el isHidden field
+    });
+
+    if (!training) {
+      throw new Error('Training not found');
+    }
+
+    return db.training.update({
+      where: { id: args.trainingId },
+      data: { isHidden: !training.isHidden }, // cambiar visibilidad
+    });
+
+  },
+  
+
+  
   
 };

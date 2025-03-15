@@ -8,7 +8,7 @@ let context: Context;
 beforeAll(async () => {
   context = {
     db: prisma,
-    authData: { email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+    authData: { id: 'admin123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
   };
 
   await setupTestData(context);
@@ -61,6 +61,37 @@ describe('Training Mutations', () => {
     expect(updateTraining.description).toBe('Updated Intro to ML');
     expect(updateTraining.isHidden).toBe(false);
   })
+  
+  it('should hide a visible training', async () => {
+    await context.db.training.update({
+      where: { id: 'training123' },
+      data: { isHidden: false },
+    });
+
+    const updatedTraining = await context.db.training.update({
+      where: { id: 'training123' },
+      data: { isHidden: true },
+    });
+
+    expect(updatedTraining).toBeDefined();
+    expect(updatedTraining.isHidden).toBe(true);
+  });
+
+  it('should show a hidden training', async () => {
+    await context.db.training.update({
+      where: { id: 'training123' },
+      data: { isHidden: true },
+    });
+
+    const updatedTraining = await context.db.training.update({
+      where: { id: 'training123' },
+      data: { isHidden: false },
+    });
+
+    expect(updatedTraining).toBeDefined();
+    expect(updatedTraining.isHidden).toBe(false);
+
+  })
 
   it('should delete a training', async () => {
     const deletedTraining = await context.db.training.delete({
@@ -74,6 +105,7 @@ describe('Training Mutations', () => {
     });
     expect(training).toBeNull();
   });
+
 });
 
 

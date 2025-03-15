@@ -28,7 +28,7 @@ export const enrollmentTypes = gql`
   ## Mutations
   type Mutation {
     # Enrollment mutations
-    enrollUser(userId: String!, trainingId: String!): Enrollment
+    subscribeToTraining(trainingId: String!): Enrollment
 
     updateEnrollmentStatus(id: String!, status: EnrollmentStatus!): Enrollment
   }

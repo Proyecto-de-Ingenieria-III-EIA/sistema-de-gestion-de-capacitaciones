@@ -53,6 +53,7 @@ export const setupTestData = async (context: Context) => {
       roleId: 2,
     }
   });
+  
 
   const training = await db.training.create({
     data: {
@@ -62,6 +63,63 @@ export const setupTestData = async (context: Context) => {
       instructorId: instructor.id,
     },
   });
+
+  const publicTraining = await context.db.training.create({
+    data: {
+      id: 'public-training',
+      title: 'Public Training',
+      description: 'Accessible to everyone',
+      isPublic: true,
+      instructorId: 'instructor123',
+    },
+  });
+
+  const privateTraining = await context.db.training.create({
+    data: {
+      id: 'private-training',
+      title: 'Private Training',
+      description: 'Requires approval',
+      isPublic: false,
+      instructorId: 'instructor123',
+    },
+  });
+
+  await context.db.training.create({
+      data: {
+        id: 'original-training',
+        title: 'Original Training',
+        description: 'This is the original training',
+        isHidden: false,
+        isPublic: true,
+        instructor: {
+          create: { id: 'instructor789', email: 'instructor5@example.com', name: 'Instructor', roleId: 2 },
+        },
+        materials: {
+          create: [{ fileType: 'PDF', fileUrl: 'https://example.com/material.pdf' }],
+        },
+        assessments: {
+          create: [{ title: 'Assessment 1' }],
+        },
+      },
+      include: { instructor: true, materials: true, assessments: true },
+    });
+
+  await context.db.enrollment.create({
+    data: {
+      trainingId: publicTraining.id,
+      userId: 'user123',
+      status: 'APPROVED',
+    },
+  });
+
+  await context.db.enrollment.create({
+    data: {
+      trainingId: privateTraining.id,
+      userId: 'user123',
+      status: 'PENDING',
+    },
+  });
+
 
   console.log("✅ Created training:", training);
 
@@ -87,6 +145,16 @@ export const setupTestData = async (context: Context) => {
       forumPostId: 'forum123',
     },
   });
+
+  await context.db.assessment.create({
+    data: {
+      id: 'assessment123',
+      trainingId: 'training123',
+      title: 'Final Exam',
+    },
+  });
+
+
 };
 
 export const cleanupTestData = async ({ db }: Context) => {

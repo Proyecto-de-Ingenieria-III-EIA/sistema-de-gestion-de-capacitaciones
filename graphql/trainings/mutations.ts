@@ -10,6 +10,7 @@ export const mutations = {
   ) => {
 
     await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+  
     const trainingExists = await db.training.findUnique({
       where: { id: args.trainingId },
     });
@@ -17,6 +18,8 @@ export const mutations = {
     if (!trainingExists) {
       throw new Error('Training not found');
     }
+
+    //file size validation
 
     return db.trainingMaterial.create({
       data: {
@@ -154,6 +157,61 @@ export const mutations = {
     });
 
   },
+
+  duplicateTraining: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
+
+    
+    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+
+    const existingTraining = await db.training.findUnique({
+      where: { id: args.trainingId },
+      include: {
+        materials: true,
+        assessments: true,
+        enrollments: true,
+        forumPosts: true,
+      },
+    });
+
+    if (!existingTraining) {
+      throw new Error('Training not found');
+    }
+
+    const duplicatedTraining = await db.training.create({
+      data: {
+        title: `${existingTraining.title} (Copy)`,
+        description: existingTraining.description,
+        // la copia es escondida
+        isHidden: true,
+        isPublic: false,
+        
+
+        materials: {
+          create: existingTraining.materials.map(material => ({
+            fileType: material.fileType,
+            fileUrl: material.fileUrl,
+          })),
+        },
+        assessments: {
+          create: existingTraining.assessments.map(assesment => ({
+            title: assesment.title,
+            // questions: assesment.questions
+          }))
+        },
+        
+      },
+      include: {
+        materials: true,
+        assessments: true,
+      }
+    });
+
+    return duplicatedTraining
+  }
   
 
   

@@ -17,12 +17,7 @@ export const validateRole = async (
     }
 
     //llamar al rol de usuario desde la bd
-    const user = await db.user.findUnique({
-        where: { email: authData.email },
-        select: { role: { select: { name: true } } },
-    });
-
-    if (!user || !allowedRoles.includes(user.role.name)) {
+    if(!allowedRoles.includes(authData.role)) {
         throw new Error('Not authorized');
     }
     

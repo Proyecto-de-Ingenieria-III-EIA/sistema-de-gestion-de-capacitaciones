@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { setupTestData, cleanupTestData } from './setup';
 import { prisma } from '@/prisma';
 import { Context } from '@/types';
+import { mutations } from '../trainings/mutations';
 
 let context: Context;
 
@@ -12,6 +13,11 @@ beforeAll(async () => {
   };
 
   await setupTestData(context);
+
+  
+
+  
+
 });
 
 afterAll(async () => {
@@ -91,7 +97,41 @@ describe('Training Mutations', () => {
     expect(updatedTraining).toBeDefined();
     expect(updatedTraining.isHidden).toBe(false);
 
-  })
+  });
+
+  it('shoud duplicate an existing training', async () => {
+    const duplicatedTraining = await mutations.duplicateTraining(
+      null,
+      { trainingId: 'original-training' },
+      context
+    );
+
+    expect(duplicatedTraining).toBeDefined();
+    expect(duplicatedTraining.title).toBe('Original Training (Copy)');
+    expect(duplicatedTraining.isHidden).toBe(true);
+    expect(duplicatedTraining.isPublic).toBe(false);
+    expect(duplicatedTraining.instructorId).toBeNull();
+
+    const duplicatedMaterials = await prisma.trainingMaterial.findMany({
+      where: { trainingId: duplicatedTraining.id },
+    });
+    expect(duplicatedMaterials.length).toBe(1);
+    expect(duplicatedMaterials[0].fileUrl).toBe('https://example.com/material.pdf');
+
+    
+    const duplicatedAssessments = await prisma.assessment.findMany({
+      where: { trainingId: duplicatedTraining.id },
+    });
+    expect(duplicatedAssessments.length).toBe(1);
+    expect(duplicatedAssessments[0].title).toBe('Assessment 1');
+
+    // todo copiado menos enrollments
+    const duplicatedEnrollments = await prisma.enrollment.findMany({
+      where: { trainingId: duplicatedTraining.id },
+    });
+    expect(duplicatedEnrollments.length).toBe(0);
+
+  });
 
   it('should delete a training', async () => {
     const deletedTraining = await context.db.training.delete({
@@ -107,5 +147,7 @@ describe('Training Mutations', () => {
   });
 
 });
+
+
 
 

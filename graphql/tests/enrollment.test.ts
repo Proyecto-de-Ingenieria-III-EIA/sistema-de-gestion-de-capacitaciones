@@ -2,11 +2,6 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { setupTestData, cleanupTestData } from './setup';
 import { prisma } from '@/prisma';
 import { Context } from '@/types';
-import { ApolloServer } from '@apollo/server';
-import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { schema } from '@/graphql/schema'; // Adjust the import path as necessary
-import { execute } from 'graphql';
 import { mutations } from '../enrollments/mutations';
 
 let context: Context;

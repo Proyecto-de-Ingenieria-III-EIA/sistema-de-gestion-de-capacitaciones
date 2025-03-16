@@ -9,11 +9,11 @@ let trainingId: string;
 beforeAll(async () => {
   context = {
     db: prisma,
-    authData: { email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+    authData: { id: 'admin123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
   };
 
   await setupTestData(context);
-
+  
   const training = await context.db.training.findUnique({
     where: { id: 'training123' },
   });

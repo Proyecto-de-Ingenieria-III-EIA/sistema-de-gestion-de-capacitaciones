@@ -60,9 +60,9 @@ model Training {
   assessments  Assessment[]
   enrollments  Enrollment[]
   forumPosts   ForumPost[]
-  instructorId String
+  instructorId String?
 
-  instructor User     @relation(fields: [instructorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  instructor User?     @relation(fields: [instructorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

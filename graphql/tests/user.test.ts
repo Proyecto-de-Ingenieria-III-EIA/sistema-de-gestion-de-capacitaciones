@@ -2,13 +2,14 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { setupTestData, cleanupTestData } from './setup';
 import { Context } from '@/types';
 import { prisma } from '@/prisma';
+import { queries } from '../users/queries';
 
 let context: Context;
 
 beforeAll(async () => {
   context = {
     db: prisma,
-    authData: { id: 'admin123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+    authData: { id: 'user123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
   };
 
   await setupTestData(context);
@@ -59,6 +60,21 @@ describe('User Mutations', () => {
     expect(assignedUser.trainings.length).toBeGreaterThan(0);
     expect(assignedUser.trainings.some(t => t.id === 'training123')).toBe(true);
   })
+
+  //el usuario está inscrito a 2 pero debería solo mostrar el aprobado
+  it('should return only approved trainings for a user', async () => {
+    const trainings = await queries.getUserTrainings(
+      null,
+      {}, 
+      context
+    );
+
+    expect(trainings).toBeInstanceOf(Array);
+    expect(trainings.length).toBe(1);
+    expect(trainings[0].id).toBe('public-training');
+  })
+
+  
 
   it('should delete an existing user', async () => {
     const deletedUser = await context.db.user.delete({

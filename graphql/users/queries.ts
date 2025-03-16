@@ -1,4 +1,5 @@
 import { Context } from '@/types';
+import { validateAuth } from '@/utils/validateAuth';
 
 export const queries = {
   // User queries
@@ -12,4 +13,36 @@ export const queries = {
     args: { email: string },
     { db }: Context
   ) => db.user.findUnique({ where: { email: args.email } }),
+
+  getUserTrainings: async (
+    _: unknown,
+    __: unknown,
+    { db, authData }: Context
+  ) => {
+    
+    validateAuth(authData);
+
+    //llamar capacitaciones de un usuario que esten aprovadas
+
+    const enrolledTrainings = await db.training.findMany({
+      where: {
+        enrollments: {
+          some: {
+            userId: authData.id,
+            status: 'APPROVED',
+          },
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        isHidden: true,
+        isPublic: true,
+        instructor: { select: {name: true} },
+      },
+    });
+
+    return enrolledTrainings;
+  }
 };

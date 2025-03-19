@@ -83,6 +83,7 @@ model Enrollment {
   trainingId String
   userId     String
   status     EnrollmentStatus @default(PENDING)
+  progress   ProgressStatus   @default(IN_PROGRESS)
 
   training Training @relation(fields: [trainingId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   user     User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -95,6 +96,11 @@ enum EnrollmentStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum ProgressStatus {
+  IN_PROGRESS
+  COMPLETED
 }
 
 model Assessment {

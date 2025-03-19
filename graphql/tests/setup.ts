@@ -2,6 +2,7 @@ import { Context } from '@/types';
 
 export const setupTestData = async (context: Context) => {
   const { db } = context;
+  const enrollments = await db.enrollment.findMany();
 
   await db.role.upsert({
     where: { id: 1 },
@@ -35,6 +36,18 @@ export const setupTestData = async (context: Context) => {
       id: 'user123',
       name: 'John Doe',
       email: 'john@example.com',
+      phone: '1234567890',
+      area: 'Engineering',
+      image: 'profile.jpg',
+      roleId: 1,
+    },
+  });
+
+  await db.user.create({
+    data: {
+      id: 'user456',
+      name: 'Joh Doe',
+      email: 'johne@example.com',
       phone: '1234567890',
       area: 'Engineering',
       image: 'profile.jpg',
@@ -107,7 +120,7 @@ export const setupTestData = async (context: Context) => {
   await context.db.enrollment.create({
     data: {
       trainingId: publicTraining.id,
-      userId: 'user123',
+      userId: 'user456',
       status: 'APPROVED',
     },
   });
@@ -115,13 +128,13 @@ export const setupTestData = async (context: Context) => {
   await context.db.enrollment.create({
     data: {
       trainingId: privateTraining.id,
-      userId: 'user123',
+      userId: 'user456',
       status: 'PENDING',
     },
   });
 
 
-  console.log("✅ Created training:", training);
+  
 
 
   // Create a test training session
@@ -161,6 +174,7 @@ export const cleanupTestData = async ({ db }: Context) => {
   await db.comment.deleteMany({});
   await db.forumPost.deleteMany({});
   await db.trainingMaterial.deleteMany({});
+  await db.enrollment.deleteMany({});
   await db.training.deleteMany({});
   await db.user.deleteMany({});
   await db.role.deleteMany({});

@@ -1,4 +1,5 @@
 import { Context } from '@/types';
+import { validateRole } from '@/utils/validateRole';
 
 export const mutations = {
   // Forum mutations
@@ -57,7 +58,10 @@ export const mutations = {
       },
     }),
 
-  deleteComment: async (_: unknown, args: { id: string }, { db }: Context) => {
+  deleteComment: async (_: unknown, args: { id: string }, { db, authData }: Context) => {
+
+    await validateRole(db, authData, ['ADMIN']);
+
     await db.comment.delete({ where: { id: args.id } });
     return true;
   },

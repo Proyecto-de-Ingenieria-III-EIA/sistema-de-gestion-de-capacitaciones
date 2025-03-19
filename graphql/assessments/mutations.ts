@@ -60,7 +60,50 @@ export const mutations = {
     });
   },
 
-  //no se si hay que agregar un modelo de respuesta al prisma
+
+  editQuestion: async (
+    _: unknown,
+    args: {
+      questionId: string;
+      question?: string;
+      options?: string[];
+      answer?: string;
+    },
+    { db, authData }: Context
+  ) => {
+
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+
+    
+    const existingQuestion = await db.question.findUnique({
+      where: { id: args.questionId },
+      include: { assessment: { include: { training: { select: { isHidden: true } } } } },
+    });
+
+    if (!existingQuestion) {
+      throw new Error('Question not found.');
+    }
+
+    if (!existingQuestion.assessment.training.isHidden) {
+      throw new Error('Questions can only be edited when the training is hidden.');
+    }
+
+    
+    if (args.answer && args.options && !args.options.includes(args.answer)) {
+      throw new Error('Answer must be one of the options.');
+    }
+
+    return db.question.update({
+      where: { id: args.questionId },
+      data: {
+        question: args.question ?? existingQuestion.question,
+        options: args.options ?? existingQuestion.options,
+        answer: args.answer ?? existingQuestion.answer,
+      },
+    });
+  },
+
+ 
 
   // Submit an assessment result
   submitAssessmentResult: async (

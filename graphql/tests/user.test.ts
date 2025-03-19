@@ -9,7 +9,7 @@ let context: Context;
 beforeAll(async () => {
   context = {
     db: prisma,
-    authData: { id: 'user123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+    authData: { id: 'user456', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
   };
 
   await setupTestData(context);

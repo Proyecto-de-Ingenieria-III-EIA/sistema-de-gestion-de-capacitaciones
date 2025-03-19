@@ -55,6 +55,35 @@ describe('Assesment Mutations', () => {
         expect(question.question).toBe('What is the capital of France?');
         expect(question.options).toContain('London');
         expect(question.answer).toBe('Paris');
-    })
+    });
+
+    it('should auto-grade an assessment result', async () => {
+        await context.db.question.create({
+          data: {
+            id: 'question123',
+            assessmentId: 'assessment123',
+            question: 'What is AI?',
+            options: ['Artificial Intelligence', 'Agriculture Institute'],
+            answer: 'Artificial Intelligence',
+          },
+        });
+    
+        const result = await mutations.submitAssessmentResult(
+          null,
+          {
+            assessmentId: 'assessment123',
+            userId: 'user123',
+            answers: [{ questionId: 'question123', selectedAnswer: 'Artificial Intelligence' }],
+          },
+          context
+        );
+    
+        expect(result).toBeDefined();
+        expect(result.assessmentId).toBe('assessment123');
+        expect(result.userId).toBe('user123');
+        expect(result.score).toBe(50);
+      });
+
+    
 })
 

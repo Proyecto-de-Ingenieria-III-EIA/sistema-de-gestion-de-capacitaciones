@@ -23,6 +23,8 @@ export const enrollmentTypes = gql`
     # Enrollments
     getEnrollments: [Enrollment]
     getEnrollmentsByUser(userId: String!): [Enrollment]
+    getParticipantsProgress: [ParticipantProgress!]!
+    getUserProgress: UserProgress!
   }
 
   ## Mutations
@@ -32,4 +34,20 @@ export const enrollmentTypes = gql`
 
     updateEnrollmentStatus(id: String!, status: EnrollmentStatus!): Enrollment
   }
+
+   type ParticipantProgress {
+    userId: String!
+    name: String!
+    email: String!
+    totalTrainings: Int!
+    completedTrainings: Int!
+    completionRate: Float!
+  }
+
+  type UserProgress {
+  userId: String!
+  totalTrainings: Int!
+  completedTrainings: Int!
+  completionRate: String!
+}
 `;

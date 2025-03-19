@@ -1,5 +1,6 @@
 import { Context } from '@/types';
 import { validateAuth } from '@/utils/validateAuth';
+import { validateRole } from '@/utils/validateRole';
 
 export const queries = {
   // User queries
@@ -43,6 +44,11 @@ export const queries = {
       },
     });
 
+
     return enrolledTrainings;
-  }
+  },
+
+  
+
+  
 };

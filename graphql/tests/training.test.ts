@@ -125,7 +125,7 @@ describe('Training Mutations', () => {
     expect(duplicatedAssessments.length).toBe(1);
     expect(duplicatedAssessments[0].title).toBe('Assessment 1');
 
-    // todo copiado menos enrollments
+    // everything copied except enrollments
     const duplicatedEnrollments = await prisma.enrollment.findMany({
       where: { trainingId: duplicatedTraining.id },
     });

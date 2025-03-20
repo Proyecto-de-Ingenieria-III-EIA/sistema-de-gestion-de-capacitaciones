@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { setupTestData, cleanupTestData } from './setup';
 import { prisma } from '@/prisma';
-import { Context, AuthData } from '@/types';
+import { Context } from '@/types';
 import { queries } from '../enrollments/queries';
-import { auth } from '@/auth';
 
 let context: Context;
 let testUserId: string;

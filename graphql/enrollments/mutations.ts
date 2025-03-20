@@ -30,7 +30,7 @@ export const mutations = {
     });
 
     if (existingEnrollment) {
-      throw new Error('Already erolled to this training');
+      throw new Error('Already enrolled to this training');
     }
 
     //aprovar si es público, sino pendiente

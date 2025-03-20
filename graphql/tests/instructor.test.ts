@@ -8,7 +8,7 @@ let context: Context;
 beforeAll(async () => {
   context = {
     db: prisma,
-    authData: { email: 'test@example.com', role: 'ADMIN', expires: new Date() },
+    authData: { id: 'admin123', email: 'test@example.com', role: 'ADMIN', expires: new Date() },
   };
 
   await setupTestData(context);
@@ -57,14 +57,4 @@ describe('Training Instructor Assigment', () => {
       expect(updatedTraining).toBeDefined();
       expect(updatedTraining.instructorId).toBe('instructor456');
     });
-  
-    // it('should throw an error when assigning a non-instructor user', async () => {
-    //     await expect(
-    //       assignInstructorToTraining(
-    //         {},
-    //         { trainingId: 'training123', instructorId: 'user123' },
-    //         { db: context.db } // Ensure correct context is passed
-    //       )
-    //     ).rejects.toThrowError('Instructor not found or not an instructor');
-    //   });
   });

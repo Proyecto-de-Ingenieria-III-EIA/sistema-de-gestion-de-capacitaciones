@@ -1,8 +1,12 @@
 import { Context } from '@/types';
+import dotenv from 'dotenv';
+
+delete process.env.DATABASE_URL;
+dotenv.config({ path: '.env.test' });
+console.log('Using DATABASE_URL:', process.env.DATABASE_URL);
 
 export const setupTestData = async (context: Context) => {
   const { db } = context;
-  const enrollments = await db.enrollment.findMany();
 
   await db.role.upsert({
     where: { id: 1 },

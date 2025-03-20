@@ -99,3 +99,6 @@ Our ESLint setup ensures code quality with:
 - 🪝 React Hooks guidelines
 - 📊 Complexity limits
 - 🎨 Prettier integration
+
+## To run tests
+Run command `bun test`

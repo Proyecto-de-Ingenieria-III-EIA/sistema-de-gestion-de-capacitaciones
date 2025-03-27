@@ -35,6 +35,13 @@ export const routerConfig: RouteConfig[] = [
     icon: LogIn,
     showInSidebar: false,
   },
+  {
+    id: 'test',
+    name: 'Page 3',
+    path: '/page-3',
+    isPublic: false,
+    showInSidebar: true,
+  }
   // Add more routes as needed
 ];
 

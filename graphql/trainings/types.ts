@@ -9,6 +9,8 @@ export const trainingTypes = gql`
     title: String!
     description: String!
     isHidden: Boolean!
+    isPublic: Boolean!
+    imageSrc: String
     materials: [TrainingMaterial]
     assessments: [Assessment]
     enrollments: [Enrollment]
@@ -31,14 +33,14 @@ export const trainingTypes = gql`
   ## Queries
   type Query {
     getTrainingMaterials(trainingId: String!): [TrainingMaterial]
-    # Trainings
     getTrainings: [Training]
     getTrainingById(id: String!): Training
+    getTrainingsByUser(userId: String!): [Training]
   }
 
   ## Mutations
   type Mutation {
-    #Training material mutations
+    # Training material mutations
     createTrainingMaterial(
       trainingId: String!
       fileType: String!
@@ -52,6 +54,7 @@ export const trainingTypes = gql`
     ): TrainingMaterial
 
     deleteTrainingMaterial(id: String!): Boolean
+
     # Training mutations
     createTraining(
       title: String!
@@ -74,5 +77,7 @@ export const trainingTypes = gql`
     ): Training
 
     toggleTrainingVisibility(trainingId: String!): Training
+
+    duplicateTraining(trainingId: String!): Training
   }
 `;

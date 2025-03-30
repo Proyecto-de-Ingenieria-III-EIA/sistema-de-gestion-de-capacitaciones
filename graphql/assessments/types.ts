@@ -47,10 +47,22 @@ export const assessmentTypes = gql`
       options: [String!]!
       answer: String!
     ): Question
+    editQuestion(
+      questionId: String!
+      question: String
+      options: [String!]
+      answer: String
+    ): Question
     submitAssessmentResult(
       assessmentId: String!
       userId: String!
-      score: Int!
+      answers: [AnswerInput!]!
     ): AssessmentResult
+  }
+
+  ## Input Types
+  input AnswerInput {
+    questionId: String!
+    selectedAnswer: String!
   }
 `;

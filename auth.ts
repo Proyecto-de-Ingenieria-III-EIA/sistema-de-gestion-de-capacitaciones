@@ -5,5 +5,10 @@ import { prisma } from '@/prisma';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Auth0],
+  callbacks: {
+    async session({ session }) {
+      return session;
+    }
+  },
   adapter: PrismaAdapter(prisma),
 });

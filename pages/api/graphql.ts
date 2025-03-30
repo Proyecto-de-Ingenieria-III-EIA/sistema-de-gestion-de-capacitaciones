@@ -10,6 +10,7 @@ export const schema = makeExecutableSchema({ typeDefs: types, resolvers });
 
 const server = new ApolloServer<Context>({
   schema,
+  introspection: true,
 });
 
 export default startServerAndCreateNextHandler(server, {
@@ -21,10 +22,10 @@ export default startServerAndCreateNextHandler(server, {
     u.email,
     r."name" as "role",
     s.expires
-    from ejemplo_proyecto."Session" s
-        join ejemplo_proyecto."User" u
+    from public."Session" s
+        join public."User" u
             on s."userId" = u.id
-        join ejemplo_proyecto."Role" r
+        join public."Role" r
             on u."roleId" = r.id
     where s."sessionToken" = ${token}
     `;

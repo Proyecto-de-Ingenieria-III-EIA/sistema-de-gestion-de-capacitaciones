@@ -61,6 +61,7 @@ model Training {
   enrollments  Enrollment[]
   forumPosts   ForumPost[]
   instructorId String?
+  imageSrc      String?
 
   instructor User?     @relation(fields: [instructorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt  DateTime @default(now())

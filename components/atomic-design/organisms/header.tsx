@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import Image from 'next/image'
 import {
     Dialog,
     DialogPanel,
@@ -49,11 +50,19 @@ export default function Header () {
                 <div className="flex lg:flex-1">
                     <a href="#" className="-m-1.5 p-1.5">
                         {/* <span className="-m-1.5 p-1.5">Company</span> */}
-                        <img 
+                        {/* <img 
                             src="https://1000marcas.net/wp-content/uploads/2023/11/Temu-Logo.png" 
                             alt="" 
                             className="h-8 w-auto"
+                        /> */}
+                        <Image
+                            src="https://1000marcas.net/wp-content/uploads/2023/11/Temu-Logo.png"
+                            alt="Company Logo"
+                            width={40} 
+                            height={40} 
+                            className="h-8 w-auto"
                         />
+
                     </a>
                 </div>
                 <div className="flex lg:hidden">

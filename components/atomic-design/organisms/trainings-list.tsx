@@ -9,7 +9,7 @@ interface TrainingsListProps {
 
 export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
       {trainings.map((training) => (
         <Card
           key={training.id}

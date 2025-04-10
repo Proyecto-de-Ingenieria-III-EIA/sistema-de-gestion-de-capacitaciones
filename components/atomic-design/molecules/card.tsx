@@ -12,9 +12,9 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ imageSrc, title, text, buttons }) => {
   return (
-    <div className="border rounded-lg shadow-md p-3 max-w-sm" style={{ width: "200", height: "300" }}>
+    <div className="border rounded-lg shadow-md p-1" style={{ width: "200", height: "300" }}>
       {/* Image */}
-      <div className="relative">
+      <div className="relative mx-auto w-[250px] h-[120px]">
         <Img src={imageSrc} alt={title} className="rounded" />
       </div>
 
@@ -24,7 +24,7 @@ export const Card: React.FC<CardProps> = ({ imageSrc, title, text, buttons }) =>
       </div>
 
       {/* Buttons */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex gap-2 p-2">
         {buttons.map((button, index) => (
           <Button key={index} onClick={button.onClick} >
             {button.label}

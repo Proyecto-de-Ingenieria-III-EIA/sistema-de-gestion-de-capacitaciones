@@ -3,8 +3,8 @@ import { Card } from "@/components/atomic-design/molecules/card";
 import { Training } from "@prisma/client";
 
 interface TrainingsListProps {
-  trainings: Training[]; // List of trainings to display
-  buttons: { label: string; onClick: (training: Training) => void }[]; // Buttons to display for each training
+  trainings: Training[]; 
+  buttons: { label: string; onClick: (training: Training) => void }[]; 
 }
 
 export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons }) => {
@@ -18,7 +18,7 @@ export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons
           text={training.description}
           buttons={buttons.map((button) => ({
             label: button.label,
-            onClick: () => button.onClick(training), // Pass the training to the onClick handler
+            onClick: () => button.onClick(training), 
           }))}
         />
       ))}

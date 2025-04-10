@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface ImageProps {
   src: string;
@@ -6,6 +7,14 @@ interface ImageProps {
   className?: string;
 }
 
-export const Image: React.FC<ImageProps> = ({ src, alt, className }) => {
-  return <img src={src} alt={alt} className={`w-full h-48 object-cover rounded-t-lg ${className}`} />;
+export const Img: React.FC<ImageProps> = ({ src, alt, className}) => {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={250}
+      height={300}
+      className={className}
+    />
+  );
 };

@@ -1,19 +1,17 @@
 import React from "react";
-import { useQuery } from "@apollo/client"; // Import Apollo Client's useQuery hook
-import { GET_TRAININGS_BY_USER } from "@/graphql/frontend/trainings"; // Import the query
+import { useQuery } from "@apollo/client"; 
+import { GET_TRAININGS_BY_USER } from "@/graphql/frontend/trainings"; 
 import { TrainingsList } from "@/components/atomic-design/organisms/trainings-list";
-import { useSession } from "next-auth/react"; // Import useSession from next-auth
+import { useSession } from "next-auth/react"; 
 import { useRouter } from "next/router";
 
 const Home = () => {
-  const { data: session } = useSession(); // Get session and status from next-auth
-  console.log("Session data:", session); // Log session data for debugging
-  const router = useRouter(); // Get router from next/router
+  const { data: session } = useSession(); 
+  const router = useRouter(); 
 
-  // Use Apollo Client's useQuery hook to fetch trainings
   const { data, loading, error } = useQuery(GET_TRAININGS_BY_USER, {
-    variables: { userId: session?.user?.id }, // Pass the userId from the session
-    skip: !session?.user?.id, // Skip the query if userId is not available
+    variables: { userId: session?.user?.id }, 
+    skip: !session?.user?.id, 
   });
 
   if (loading) return <p>Loading...</p>;

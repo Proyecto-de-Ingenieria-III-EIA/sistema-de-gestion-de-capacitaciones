@@ -1,5 +1,5 @@
 import React from "react";
-import { Image } from "@/components/atomic-design/atoms/images/image";
+import { Img } from "@/components/atomic-design/atoms/images/image";
 import { Button } from "@/components/ui/button";
 import { Title } from "../atoms/texts/title";
 
@@ -12,9 +12,11 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ imageSrc, title, text, buttons }) => {
   return (
-    <div className="border rounded-lg shadow-md p-4 max-w-sm">
+    <div className="border rounded-lg shadow-md p-3 max-w-sm" style={{ width: "200", height: "300" }}>
       {/* Image */}
-      <Image src={imageSrc} alt={title} />
+      <div className="relative">
+        <Img src={imageSrc} alt={title} className="rounded" />
+      </div>
 
       {/* Text */}
       <div className="mt-4">

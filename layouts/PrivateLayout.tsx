@@ -1,4 +1,3 @@
-import { AppSidebar } from '@/components/atomic-design/organisms/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { signIn, useSession } from 'next-auth/react';
 
@@ -15,7 +14,6 @@ const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <AppSidebar />
       <main className='flex-1 overflow-auto'>
         <div className='container'>{children}</div>
       </main>

@@ -28,7 +28,7 @@ export const userTypes = gql`
     getUserById(id: String!): User
     getUserByEmail(email: String!): User
     getUserTrainings: [Training]
-    
+    getInstructors: [User]
   }
 
   ## Mutations

@@ -8,6 +8,7 @@ export const enrollmentTypes = gql`
     user: User!
     training: Training!
     status: EnrollmentStatus!
+    progress: ProgressStatus!
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -18,6 +19,11 @@ export const enrollmentTypes = gql`
     REJECTED
   }
 
+  enum ProgressStatus {
+    IN_PROGRESS
+    COMPLETED
+  }
+
   ## Queries
   type Query {
     # Enrollments
@@ -25,6 +31,7 @@ export const enrollmentTypes = gql`
     getEnrollmentsByUser(userId: String!): [Enrollment]
     getParticipantsProgress: [ParticipantProgress!]!
     getUserProgress: UserProgress!
+    getEnrollmentsByTraining(trainingId: String!): [Enrollment]
   }
 
   ## Mutations

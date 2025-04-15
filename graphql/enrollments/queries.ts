@@ -77,4 +77,17 @@ export const queries = {
         completionRate: `${completionRate.toFixed(2)}%`,
       };
     },
+
+    getEnrollmentsByTraining: async (
+      _: unknown,
+      args: { trainingId: string },
+      { db, authData }: Context
+    ) => {
+      // await validateRole(db, authData, ['ADMIN']);
+
+      return db.enrollment.findMany({
+        where: { trainingId: args.trainingId },
+        include: { user: true },
+      });
+    }
 };

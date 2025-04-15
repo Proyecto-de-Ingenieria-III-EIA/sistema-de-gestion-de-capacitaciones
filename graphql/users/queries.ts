@@ -47,8 +47,13 @@ export const queries = {
 
     return enrolledTrainings;
   },
+  getInstructors: async (
+    _: unknown,
+    __: unknown,
+    { db, authData }: Context
+  ) => {
+    validateAuth(authData); 
+    return db.user.findMany({ where: { roleId: 2 } }); 
+  },
 
-  
-
-  
 };

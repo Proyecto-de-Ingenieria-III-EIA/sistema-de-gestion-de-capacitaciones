@@ -64,16 +64,20 @@ export const mutations = {
   createTraining: async (
     _: unknown,
     args: { title: string; description: string; instructorId: string },
-    { db }: Context
-  ) =>
-    db.training.create({
+    { db, authData }: Context
+  ) =>{
+    validateRole( db, authData, ['ADMIN']);
+
+    return db.training.create({
       data: {
         title: args.title,
         description: args.description,
         instructorId: args.instructorId,
+        isHidden: true,
       },
       include: { instructor: true },
-    }),
+    });
+  },
 
   updateTraining: async (
     _: unknown,

@@ -150,3 +150,20 @@ export const DUPLICATE_TRAINING = gql`
     }
   }
 `;
+
+export const GET_TRAINING_DETAILS = gql`
+  query GetTrainingDetails($id: String!) {
+    getTraining(id: $id) {
+      id
+      title
+      description
+      isHidden
+      isPublic
+      createdAt
+      instructor {
+        id
+        name
+      }
+    }
+  }
+`;

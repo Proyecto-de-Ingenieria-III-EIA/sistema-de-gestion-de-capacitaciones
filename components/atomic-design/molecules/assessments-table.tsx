@@ -6,6 +6,7 @@ import {
   ADD_QUESTION,
   EDIT_QUESTION,
   DELETE_QUESTION,
+  DELETE_ASSESSMENT,
 } from "@/graphql/frontend/assessments";
 import { useSession } from "next-auth/react";
 import { PlusIcon, TrashIcon, PencilIcon } from "lucide-react";
@@ -54,6 +55,15 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
     },
   });
 
+  const [deleteAssessment] = useMutation(DELETE_ASSESSMENT, {
+    refetchQueries: ["GetAssessments"], 
+    context: {
+      headers: {
+        "session-token": session?.sessionToken,
+      },
+    },
+  });
+
   const [addQuestion] = useMutation(ADD_QUESTION, {
     refetchQueries: ["GetAssessments"],
     context: {
@@ -89,6 +99,18 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
       setTitle("");
     } catch (err) {
       console.error("Error creating assessment:", err);
+    }
+  };
+
+  const handleDeleteAssessment = async (assessmentId: string) => {
+    if (confirm("Are you sure you want to delete this assessment?")) {
+      try {
+        await deleteAssessment({ variables: { assessmentId: assessmentId } });
+        alert("Assessment deleted successfully!");
+      } catch (err) {
+        console.error("Error deleting assessment:", err);
+        alert("Failed to delete assessment.");
+      }
     }
   };
 
@@ -162,10 +184,16 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">{assessment.title}</h3>
                 <button
-                  onClick={() => handleOpenQuestions(assessment.id)} // Open questions and scroll
+                  onClick={() => handleOpenQuestions(assessment.id)} 
                   className="text-blue-500 hover:text-blue-700"
                 >
                   Manage Questions
+                </button>
+                <button
+                  onClick={() => handleDeleteAssessment(assessment.id)} 
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <TrashIcon className="w-5 h-5" />
                 </button>
               </div>
 

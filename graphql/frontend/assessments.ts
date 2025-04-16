@@ -40,6 +40,14 @@ export const CREATE_ASSESSMENT = gql`
     }
 `;
 
+export const DELETE_ASSESSMENT = gql`
+    mutation DeleteAssessment($assessmentId: String!) {
+        deleteAssessment(assessmentId: $assessmentId) {
+            id
+        }
+    }
+`;
+
 export const ADD_QUESTION = gql`
     mutation AddQuestion($assessmentId: String!, $question: String!, $options: [String!]!, $answer: String!) {
         addQuestion(assessmentId: $assessmentId, question: $question, options: $options, answer: $answer) {

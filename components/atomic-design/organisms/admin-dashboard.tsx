@@ -1,8 +1,6 @@
 import React from "react";
 import { TrainingsList } from "@/components/atomic-design/organisms/trainings-list";
 import { Training } from "@prisma/client";
-import Header from "./header";
-import { ChartPieIcon } from "lucide-react";
 import AdminLayout from "@/components/layouts/admin-layout";
 import router from "next/router";
 import { useMutation, useQuery } from "@apollo/client";
@@ -80,6 +78,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ trainings }) => 
             label: "Duplicate",
             onClick: handleDuplicateTraining,
           },
+          {
+            label: "View",
+            onClick: (training: Training) => {
+              localStorage.setItem("selectedTraining", JSON.stringify(training));
+              router.push(`/trainings/${training.id}`);
+            }
+          }
         ]}
       />
     </AdminLayout>

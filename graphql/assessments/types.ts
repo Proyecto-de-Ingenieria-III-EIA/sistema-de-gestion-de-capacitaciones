@@ -41,6 +41,7 @@ export const assessmentTypes = gql`
   ## Mutations
   type Mutation {
     createAssessment(trainingId: String!, title: String!): Assessment
+    deleteAssessment(assessmentId: String!): Assessment
     addQuestion(
       assessmentId: String!
       question: String!

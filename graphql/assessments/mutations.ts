@@ -19,7 +19,22 @@ export const mutations = {
     });
   },
 
-  // Add a question to an assessment
+  deleteAssessment: async (_: unknown, args: { assessmentId: string }, { db, authData }: Context) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+  
+    const existingAssessment = await db.assessment.findUnique({
+      where: { id: args.assessmentId },
+    });
+  
+    if (!existingAssessment) {
+      throw new Error('Assessment not found');
+    }
+  
+    return db.assessment.delete({
+      where: { id: args.assessmentId },
+    });
+  },
+
   addQuestion: async (
     _: unknown,
     args: {

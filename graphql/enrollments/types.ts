@@ -32,14 +32,15 @@ export const enrollmentTypes = gql`
     getParticipantsProgress: [ParticipantProgress!]!
     getUserProgress: UserProgress!
     getEnrollmentsByTraining(trainingId: String!): [Enrollment]
+    getAvailableUsersForTraining(trainingId: String!): [User]
   }
 
   ## Mutations
   type Mutation {
     # Enrollment mutations
-    subscribeToTraining(trainingId: String!): Enrollment
-
+    subscribeToTraining(trainingId: String!, userId: String): Enrollment
     updateEnrollmentStatus(id: String!, status: EnrollmentStatus!): Enrollment
+    deleteEnrollment(id: String!): Enrollment
   }
 
    type ParticipantProgress {

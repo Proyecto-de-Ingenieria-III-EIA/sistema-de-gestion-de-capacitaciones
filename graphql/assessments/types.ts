@@ -53,6 +53,7 @@ export const assessmentTypes = gql`
       options: [String!]
       answer: String
     ): Question
+    deleteQuestion(questionId: String!): Question
     submitAssessmentResult(
       assessmentId: String!
       userId: String!

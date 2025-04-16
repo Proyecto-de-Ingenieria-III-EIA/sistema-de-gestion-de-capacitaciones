@@ -48,3 +48,105 @@ mutation createTraining($title: String!, $description: String!, $instructorId: S
   }
 }
 `;
+
+export const UPDATE_TRAINING = gql`
+  mutation UpdateTraining(
+    $id: String!
+    $title: String
+    $description: String
+    $instructorId: String
+    $isHidden: Boolean
+    $isPublic: Boolean
+  ) {
+    updateTraining(
+      id: $id
+      title: $title
+      description: $description
+      instructorId: $instructorId
+      isHidden: $isHidden
+      isPublic: $isPublic
+    ) {
+      id
+      title
+      description
+      instructor {
+        id
+        name
+      }
+      isHidden
+      isPublic
+    }
+  }
+`;
+
+export const DELETE_TRAINING = gql`
+  mutation deleteTraining($id: String!) {
+    deleteTraining(id: $id){
+      id
+    }
+  }
+`;
+
+export const GET_TRAINING_MATERIALS = gql`
+  query GetTrainingMaterials($trainingId: String!) {
+    getTrainingMaterials(trainingId: $trainingId) {
+      id
+      fileType
+      fileUrl
+      createdAt
+    }
+  }
+`;
+
+export const ADD_TRAINING_MATERIAL = gql`
+  mutation addTrainingMaterial($trainingId: String!, $fileType: String!, $fileUrl: String!) {
+    createTrainingMaterial(trainingId: $trainingId, fileType: $fileType, fileUrl: $fileUrl) {
+      id
+      training {
+        id
+        title
+      }
+      fileType
+      fileUrl
+    }
+  }
+`;
+
+export const DELETE_TRAINING_MATERIAL = gql`
+  mutation DeleteTrainingMaterial($id: String!) {
+    deleteTrainingMaterial(id: $id) {
+      id
+    }
+  }
+`;
+
+export const DUPLICATE_TRAINING = gql`
+  mutation DuplicateTraining($trainingId: String!) {
+    duplicateTraining(trainingId: $trainingId) {
+      id
+      title
+      description
+      isHidden
+      isPublic
+      instructor {
+        id
+        name
+      }
+      materials {
+        id
+        fileType
+        fileUrl
+      }
+      assessments {
+        id
+        title
+        questions {
+          id
+          question
+          options
+          answer
+        }
+      }
+    }
+  }
+`;

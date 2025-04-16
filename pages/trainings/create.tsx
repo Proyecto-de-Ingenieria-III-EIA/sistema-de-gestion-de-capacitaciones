@@ -8,8 +8,8 @@ import { CREATE_TRAINING } from "@/graphql/frontend/trainings";
 import AdminLayout from "@/components/layouts/admin-layout";
 
 export default function CreateTraining() {
-  const {data: session} = useSession();
-  const [createTraining, {loading: mutationLoading, error: mutationError}] = useMutation(CREATE_TRAINING, {
+  const { data: session } = useSession();
+  const [createTraining, { loading: mutationLoading, error: mutationError }] = useMutation(CREATE_TRAINING, {
     context: {
       headers: {
         "session-token": session?.sessionToken,
@@ -17,7 +17,7 @@ export default function CreateTraining() {
     },
   });
 
-  const {data, loading, error} = useQuery(GET_INSTRUCTORS, {
+  const { data, loading, error } = useQuery(GET_INSTRUCTORS, {
     context: {
       headers: {
         "session-token": session?.sessionToken,
@@ -32,7 +32,7 @@ export default function CreateTraining() {
     value: instructor.id,
     label: instructor.name,
   }));
-  
+
   const fields = [
     {
       name: "title",
@@ -61,7 +61,7 @@ export default function CreateTraining() {
   async function handleSubmit(values: Record<string, any>) {
     if (mutationLoading) return <p>Creating training...</p>;
     if (mutationError) return <p>Error creating training: {mutationError.message}</p>;
-    
+
     try {
       const { data } = await createTraining({
         variables: {
@@ -73,7 +73,6 @@ export default function CreateTraining() {
 
       if (data?.createTraining) {
         toast.success("Training created successfully!");
-        console.log("Created Training:", data.createTraining);
       }
     } catch (error) {
       console.error("Error creating training:", error);
@@ -83,13 +82,13 @@ export default function CreateTraining() {
 
   return (
     <AdminLayout>
-    <CreateForm
-      title="New Training"
-      description="Please fill the fields with the new trainings's information."
-      fields={fields}
-      onSubmit={handleSubmit}
-      submitButtonLabel="Create"
-    />
+      <CreateForm
+        title="New Training"
+        description="Please fill the fields with the new trainings's information."
+        fields={fields}
+        onSubmit={handleSubmit}
+        submitButtonLabel="Create"
+      />
     </AdminLayout>
   );
 }

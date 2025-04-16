@@ -11,30 +11,32 @@ export const mutations = {
 
     await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
   
-    const trainingExists = await db.training.findUnique({
+    const training = await db.training.findUnique({
       where: { id: args.trainingId },
     });
 
-    if (!trainingExists) {
+    if (!training) {
       throw new Error('Training not found');
     }
 
-    //file size validation
-
     return db.trainingMaterial.create({
       data: {
-        trainingId: args.trainingId,
+        trainingId: training.id,
         fileType: args.fileType,
         fileUrl: args.fileUrl,
       },
+      include: { training: true },
     });
   },
 
   updateTrainingMaterial: async (
     _: unknown,
     args: { id: string; fileType?: string; fileUrl?: string },
-    { db }: Context
+    { db, authData }: Context
   ) => {
+
+    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+    
     const trainingMaterialExists = await db.trainingMaterial.findUnique({
       where: { id: args.id },
     });
@@ -49,16 +51,17 @@ export const mutations = {
         fileType: args.fileType ?? trainingMaterialExists.fileType,
         fileUrl: args.fileUrl ?? trainingMaterialExists.fileUrl,
       },
+      include: { training: true },
     });
   },
 
   deleteTrainingMaterial: async (
     _: unknown,
     args: { id: string },
-    { db }: Context
+    { db, authData }: Context
   ) => {
-    await db.trainingMaterial.delete({ where: { id: args.id } });
-    return true;
+    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+    return db.trainingMaterial.delete({ where: { id: args.id } });
   },
   // Training mutations
   createTraining: async (
@@ -86,21 +89,46 @@ export const mutations = {
       title?: string;
       description?: string;
       isHidden?: boolean;
+      isPublic?: boolean;
+      instructorId?: string;
     },
-    { db }: Context
-  ) =>
-    db.training.update({
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+  
+    const existingTraining = await db.training.findUnique({
+      where: { id: args.id },
+    });
+  
+    if (!existingTraining) {
+      throw new Error('Training not found');
+    }
+  
+    return db.training.update({
       where: { id: args.id },
       data: {
-        title: args.title,
-        description: args.description,
-        isHidden: args.isHidden,
+        title: args.title ?? existingTraining.title,
+        description: args.description ?? existingTraining.description,
+        isHidden: args.isHidden ?? existingTraining.isHidden,
+        isPublic: args.isPublic ?? existingTraining.isPublic,
+        instructorId: args.instructorId ?? existingTraining.instructorId,
       },
-    }),
+      include: { instructor: true },
+    });
+  },
 
-  deleteTraining: async (_: unknown, args: { id: string }, { db }: Context) => {
-    await db.training.delete({ where: { id: args.id } });
-    return true;
+  deleteTraining: async (_: unknown, args: { id: string }, { db, authData}: Context) => {
+    await validateRole(db, authData, ["ADMIN"]);
+    
+      const training = await db.training.findUnique({
+        where: { id: args.id },
+      });
+    
+      if (!training) {
+        throw new Error("Training not found");
+      }
+      
+    return db.training.delete({ where: { id: training.id } });
   },
 
   // Instructor
@@ -148,7 +176,7 @@ export const mutations = {
 
     const training = await db.training.findUnique({
       where: { id: args.trainingId },
-      select: { isHidden: true }, // nos significa que isHidden sea true, sino que va a buscar solo el isHidden field
+      select: { isHidden: true },
     });
 
     if (!training) {
@@ -157,7 +185,7 @@ export const mutations = {
 
     return db.training.update({
       where: { id: args.trainingId },
-      data: { isHidden: !training.isHidden }, // cambiar visibilidad
+      data: { isHidden: !training.isHidden },
     });
 
   },
@@ -167,57 +195,69 @@ export const mutations = {
     args: { trainingId: string },
     { db, authData }: Context
   ) => {
-
-    
-    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
-
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+  
     const existingTraining = await db.training.findUnique({
       where: { id: args.trainingId },
       include: {
         materials: true,
-        assessments: true,
+        assessments: {
+          include: {
+            questions: true,
+          },
+        },
         enrollments: true,
         forumPosts: true,
+        instructor: true,
       },
     });
-
+  
     if (!existingTraining) {
       throw new Error('Training not found');
     }
-
+  
     const duplicatedTraining = await db.training.create({
       data: {
         title: `${existingTraining.title} (Copy)`,
         description: existingTraining.description,
-        // la copia es escondida
-        isHidden: true,
+        isHidden: true, 
         isPublic: false,
-        
-
+        imageSrc: existingTraining.imageSrc,
+        instructorId: existingTraining.instructorId,
+  
         materials: {
-          create: existingTraining.materials.map(material => ({
+          create: existingTraining.materials.map((material) => ({
             fileType: material.fileType,
             fileUrl: material.fileUrl,
           })),
         },
+  
+        // Duplicate assessments with their questions
         assessments: {
-          create: existingTraining.assessments.map(assesment => ({
-            title: assesment.title,
-            // questions: assesment.questions
-          }))
+          create: existingTraining.assessments.map((assessment) => ({
+            title: assessment.title,
+            questions: {
+              create: assessment.questions.map((question) => ({
+                question: question.question,
+                options: question.options,
+                answer: question.answer,
+              })),
+            },
+          })),
         },
-        
       },
       include: {
         materials: true,
-        assessments: true,
-      }
+        assessments: {
+          include: {
+            questions: true,
+          },
+        },
+        instructor: true,
+      },
     });
-
-    return duplicatedTraining
-  }
   
-
-  
+    return duplicatedTraining;
+  },
   
 };

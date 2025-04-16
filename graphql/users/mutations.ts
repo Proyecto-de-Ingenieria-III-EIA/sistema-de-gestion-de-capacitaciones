@@ -27,20 +27,4 @@ export const mutations = {
     await db.user.delete({ where: { id: args.id } });
     return true;
   },
-
-  assignTrainingToUser: async (
-    _: unknown,
-    args: { userId: string, trainingId: string},
-    { db }: Context
-  ) => {
-    return db.user.update({
-      where: { id: args.userId},
-      data: {
-        trainings: {
-          connect: { id: args.trainingId}
-        },
-      },
-    });
-  },
-  
 };

@@ -16,3 +16,20 @@ export const GET_INSTRUCTORS = gql`
     }
   }
 `;
+
+export const GET_USERS = gql`
+  query getUsers {
+    getUsers {
+      id
+      name
+      email
+      image
+      area
+      phone
+      role {
+        id
+        name
+      }
+    }
+  }
+`;

@@ -1,4 +1,5 @@
 import { Context } from '@/types';
+import { validateAuth } from '@/utils/validateAuth';
 import { validateRole } from '@/utils/validateRole';
 
 export const queries = {
@@ -33,9 +34,12 @@ export const queries = {
   getTrainingMaterials: async (
     _: unknown,
     args: { trainingId: string },
-    { db }: Context
-  ) =>
-    db.trainingMaterial.findMany({
+    { db, authData }: Context
+  ) => {
+    validateAuth(authData);
+    return db.trainingMaterial.findMany({
       where: { trainingId: args.trainingId },
-    }),
+      include: {training: true},
+    });
+  },
 };

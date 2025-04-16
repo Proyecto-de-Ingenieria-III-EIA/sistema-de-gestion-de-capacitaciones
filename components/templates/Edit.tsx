@@ -40,8 +40,6 @@ interface EditFormProps {
   onSubmit: (values: Record<string, any>) => void;
   submitButtonLabel: string;
   initialData: Training; 
-  showFileUpload?: boolean; 
-  onFileUpload?: (file: File) => void;
 }
 
 export default function EditForm({
@@ -51,8 +49,6 @@ export default function EditForm({
   onSubmit,
   submitButtonLabel,
   initialData,
-  showFileUpload = false, 
-  onFileUpload,
 }: EditFormProps) {
   const schema = z.object(
     fields.reduce((acc, field) => {
@@ -126,26 +122,6 @@ export default function EditForm({
                   )}
                 />
               ))}
-              {/* Optional File Upload */}
-              {showFileUpload && onFileUpload && (
-                <FormItem>
-                  <FormLabel>Upload Training Material</FormLabel>
-                  <FormControl>
-                    <input
-                      type="file"
-                      accept="*/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          onFileUpload(file);
-                        }
-                      }}
-                      className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                    />
-                  </FormControl>
-                  <FormDescription>Upload files related to this training.</FormDescription>
-                </FormItem>
-              )}
               <Button type="submit">{submitButtonLabel}</Button>
             </form>
           </Form>

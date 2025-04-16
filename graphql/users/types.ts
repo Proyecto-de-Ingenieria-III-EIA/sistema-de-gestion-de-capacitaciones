@@ -44,7 +44,6 @@ export const userTypes = gql`
 
     deleteUser(id: String!): Boolean
     
-    assignTrainingToUser(userId: String!, trainingId: String!): User
   }
 
  

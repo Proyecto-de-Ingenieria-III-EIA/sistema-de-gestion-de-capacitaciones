@@ -103,6 +103,28 @@ export const mutations = {
     });
   },
 
+  // Delete a question from an assessment
+  deleteQuestion: async (
+    _: unknown,
+    args: { questionId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+    const question = await db.question.findUnique({
+      where: { id: args.questionId },
+      include: { assessment: { include: { training: { select: { isHidden: true } } } } },
+    });
+    if (!question) {
+      throw new Error('Question not found.');
+    }
+    if (!question.assessment.training.isHidden) {
+      throw new Error('Questions can only be deleted when the training is hidden.');
+    }
+    return db.question.delete({
+      where: { id: args.questionId },
+    });
+  },
+
  
 
   // Submit an assessment result

@@ -30,7 +30,6 @@ export const queries = {
       },
     });
 
-    //calcular porcentaje solo de aquellas COMPLETED
     const participantsProgress = progressData.map( u => {
       const totalTrainings = u.enrollments.length;
       const completedTrainings = u.enrollments.filter( e => e.progress === 'COMPLETED').length;
@@ -48,7 +47,6 @@ export const queries = {
     });
 
     return participantsProgress;
-
 
     },
 
@@ -76,5 +74,45 @@ export const queries = {
         completedTrainings,
         completionRate: `${completionRate.toFixed(2)}%`,
       };
+    },
+
+    getEnrollmentsByTraining: async (
+      _: unknown,
+      args: { trainingId: string },
+      { db, authData }: Context
+    ) => {
+      await validateRole(db, authData, ['ADMIN']);
+
+      return db.enrollment.findMany({
+        where: { trainingId: args.trainingId },
+        include: { user: true },
+      });
+    },
+    
+    getAvailableUsersForTraining: async (
+      _: unknown,
+      args: { trainingId: string },
+      { db, authData }: Context
+    ) => {
+      await validateRole(db, authData, ['ADMIN']);
+    
+      const enrolledUserIds = await db.enrollment.findMany({
+        where: { trainingId: args.trainingId },
+        select: { userId: true },
+      });
+    
+      const enrolledIds = enrolledUserIds.map((enrollment) => enrollment.userId);
+    
+      return db.user.findMany({
+        where: {
+          id: { notIn: enrolledIds }, 
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          area: true,
+        },
+      });
     },
 };

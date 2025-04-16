@@ -53,7 +53,7 @@ export const trainingTypes = gql`
       fileUrl: String
     ): TrainingMaterial
 
-    deleteTrainingMaterial(id: String!): Boolean
+    deleteTrainingMaterial(id: String!): TrainingMaterial
 
     # Training mutations
     createTraining(
@@ -66,10 +66,12 @@ export const trainingTypes = gql`
       id: String!
       title: String
       description: String
+      instructorId: String
       isHidden: Boolean
+      isPublic: Boolean
     ): Training
 
-    deleteTraining(id: String!): Boolean
+    deleteTraining(id: String!): Training
 
     assignInstructorToTraining(
       trainingId: String!

@@ -9,6 +9,7 @@ export const assessmentTypes = gql`
     training: Training!
     title: String!
     questions: [Question!]!
+    assessmentResults: [AssessmentResult!]!
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -36,6 +37,7 @@ export const assessmentTypes = gql`
   type Query {
     getAssessments(trainingId: String!): [Assessment]
     getAssessmentResults(assessmentId: String!): [AssessmentResult]
+    getAssessmentResultsByUser(userId: String!, trainingId: String!): [AssessmentResult]
   }
 
   ## Mutations

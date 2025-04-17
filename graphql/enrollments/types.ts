@@ -33,6 +33,7 @@ export const enrollmentTypes = gql`
     getUserProgress: UserProgress!
     getEnrollmentsByTraining(trainingId: String!): [Enrollment]
     getAvailableUsersForTraining(trainingId: String!): [User]
+    getUserProgress: UserProgress!
   }
 
   ## Mutations

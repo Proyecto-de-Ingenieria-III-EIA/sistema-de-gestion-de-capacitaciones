@@ -16,18 +16,75 @@ export const GET_TRAININGS_BY_USER = gql`
 export const GET_TRAININGS = gql`
   query GetTrainings {
     getTrainings {
+    id
+    title
+    description
+    isHidden
+    isPublic
+    imageSrc
+    createdAt
+    updatedAt
+    instructor {
+      id
+      name
+      email
+    }
+    materials {
+      id
+      fileType
+      fileUrl
+    }
+    assessments {
       id
       title
-      description
-      isHidden
-      isPublic
-      imageSrc
-      instructor {
+      questions {
+        id
+        question
+        options
+        answer
+      }
+    }
+    enrollments {
+      id
+      status
+      progress
+      user {
         id
         name
+        email
+        area
       }
     }
   }
+}
+`;
+
+export const GET_TRAINING_BY_ID = gql`
+  query GetTrainingById($trainingId: String!) {
+    getTrainingById(trainingId: $trainingId) {
+    id
+    title
+    description
+    isHidden
+    isPublic
+    imageSrc
+    createdAt
+    updatedAt
+    instructor {
+      id
+      name
+      email
+    }
+    assessments {
+      id
+    }
+    enrollments {
+      id
+      status
+      progress
+    }
+  }
+}
 `;
 
 export const CREATE_TRAINING = gql`
@@ -146,23 +203,6 @@ export const DUPLICATE_TRAINING = gql`
           options
           answer
         }
-      }
-    }
-  }
-`;
-
-export const GET_TRAINING_DETAILS = gql`
-  query GetTrainingDetails($id: String!) {
-    getTraining(id: $id) {
-      id
-      title
-      description
-      isHidden
-      isPublic
-      createdAt
-      instructor {
-        id
-        name
       }
     }
   }

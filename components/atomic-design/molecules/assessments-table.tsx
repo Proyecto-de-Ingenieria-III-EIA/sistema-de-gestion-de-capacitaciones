@@ -9,13 +9,16 @@ import {
   DELETE_ASSESSMENT,
 } from "@/graphql/frontend/assessments";
 import { useSession } from "next-auth/react";
-import { PlusIcon, TrashIcon, PencilIcon } from "lucide-react";
+import { TrashIcon, PencilIcon } from "lucide-react";
+import { Assessment } from "@prisma/client";
 
 interface AssessmentsTableProps {
   trainingId: string;
+  renderAction?: (assessment: Assessment) => React.ReactNode;
+  canModifyAssessment: boolean;
 }
 
-export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) {
+export default function AssessmentsTable({ trainingId, renderAction, canModifyAssessment }: AssessmentsTableProps) {
   const { data: session } = useSession();
   const [title, setTitle] = useState("");
   const [selectedAssessmentId, setSelectedAssessmentId] = useState<string | null>(null);
@@ -23,21 +26,20 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
   const [options, setOptions] = useState<string[]>([]);
   const [answer, setAnswer] = useState("");
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
-  const questionsSectionRef = useRef<HTMLDivElement | null>(null); // Ref for the questions section
+  const questionsSectionRef = useRef<HTMLDivElement | null>(null); 
 
   const handleOpenQuestions = (assessmentId: string) => {
     setSelectedAssessmentId(assessmentId);
 
-    // Scroll the questions section into view
     setTimeout(() => {
       questionsSectionRef.current?.scrollIntoView({
-        behavior: "smooth", // Smooth scrolling
-        block: "start", // Align to the top of the viewport
+        behavior: "smooth",
+        block: "start",
       });
     }, 0);
   };
 
-  const { data, loading, error } = useQuery(GET_ASSESSMENTS, {
+  const { data } = useQuery(GET_ASSESSMENTS, {
     variables: { trainingId },
     context: {
       headers: {
@@ -150,28 +152,32 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
     }
   };
 
+  console.log(canModifyAssessment);
+
   return (
     <div className="mt-8">
       <h2 className="text-xl font-semibold mb-4">Assessments</h2>
 
       {/* Add/Edit Assessment Form */}
-      <form onSubmit={handleAddAssessment} className="mb-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Assessment Title"
-            className="flex-1 border border-gray-300 rounded-lg p-2"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-          >
-            Add Assessment
-          </button>
-        </div>
-      </form>
+      {canModifyAssessment && (
+        <form onSubmit={handleAddAssessment} className="mb-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Assessment Title"
+              className="flex-1 border border-gray-300 rounded-lg p-2"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            >
+              Add Assessment
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Assessments List */}
       {data && data.getAssessments && (
@@ -183,18 +189,27 @@ export default function AssessmentsTable({ trainingId }: AssessmentsTableProps) 
             >
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">{assessment.title}</h3>
+
+                {canModifyAssessment && (
                 <button
                   onClick={() => handleOpenQuestions(assessment.id)} 
                   className="text-blue-500 hover:text-blue-700"
                 >
                   Manage Questions
                 </button>
+                )}
+                {/* Delete Assessment Button */}
+                {canModifyAssessment && (
                 <button
                   onClick={() => handleDeleteAssessment(assessment.id)} 
                   className="text-red-500 hover:text-red-700"
                 >
                   <TrashIcon className="w-5 h-5" />
                 </button>
+                )}
+
+                {/* Render Action Button */}
+                {renderAction ? renderAction(assessment) : null}
               </div>
 
               {/* Questions Section */}

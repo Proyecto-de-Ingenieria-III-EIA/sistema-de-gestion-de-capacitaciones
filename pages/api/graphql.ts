@@ -19,6 +19,7 @@ export default startServerAndCreateNextHandler(server, {
 
     const authData = await prisma.$queryRaw<AuthData[]>`
     select 
+    u.id,
     u.email,
     r."name" as "role",
     s.expires

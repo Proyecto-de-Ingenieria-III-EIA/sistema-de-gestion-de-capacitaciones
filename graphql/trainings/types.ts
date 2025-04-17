@@ -34,7 +34,7 @@ export const trainingTypes = gql`
   type Query {
     getTrainingMaterials(trainingId: String!): [TrainingMaterial]
     getTrainings: [Training]
-    getTrainingById(id: String!): Training
+    getTrainingById(trainingId: String!): Training
     getTrainingsByUser(userId: String!): [Training]
   }
 

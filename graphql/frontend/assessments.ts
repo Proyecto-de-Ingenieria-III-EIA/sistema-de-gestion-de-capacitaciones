@@ -6,10 +6,15 @@ export const GET_ASSESSMENTS = gql`
             id
             title
             questions {
-            id
-            question
-            options
-            answer
+                id
+                question
+                options
+                answer
+            }
+            assessmentResults {
+                id
+                score
+                updatedAt
             }
             createdAt
             updatedAt
@@ -29,6 +34,20 @@ export const GET_ASSESSMENT_RESULTS = gql`
             createdAt
         }
     }
+`;
+
+export const GET_ASSESSMENT_RESULTS_BY_USER = gql`
+  query GetAssessmentResultsByUser($userId: String!, $trainingId: String!) {
+    getAssessmentResultsByUser(userId: $userId, trainingId: $trainingId) {
+      id
+      assessment {
+        id
+        title
+      }
+      score
+      createdAt
+    }
+  }
 `;
 
 export const CREATE_ASSESSMENT = gql`

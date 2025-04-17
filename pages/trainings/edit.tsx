@@ -1,14 +1,12 @@
 import AssessmentsTable from "@/components/atomic-design/molecules/assessments-table";
 import EnrollmentsTable from "@/components/atomic-design/molecules/enrollments-table";
-import TrainingMaterialsTable from "@/components/atomic-design/molecules/training-material";
+import TrainingMaterialsTable from "@/components/atomic-design/molecules/training-materials-table";
 import AdminLayout from "@/components/layouts/admin-layout";
-import EditForm, { FieldConfig } from "@/components/templates/Edit";
-import { GET_ENROLLMENTS } from "@/graphql/frontend/enrollments";
+import EditForm, { FieldConfig } from "@/components/templatesa/Edit";
 import { UPDATE_TRAINING } from "@/graphql/frontend/trainings";
 import { GET_INSTRUCTORS } from "@/graphql/frontend/users";
 import { TrainingWithInstructor } from "@/types/training-instructor";
 import { useMutation, useQuery } from "@apollo/client";
-import { TrashIcon, PlusIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import * as z from "zod";
@@ -33,11 +31,10 @@ export default function EditTraining() {
         "session-token": session?.sessionToken,
       },
     },
-    refetchQueries: ["GetTrainings"], 
+    refetchQueries: ["GetTrainings"],
   });
 
   const [trainingData, setTrainingData] = useState<TrainingWithInstructor | null>(null);
-  const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
     const storedTraining = localStorage.getItem("selectedTraining");
@@ -47,27 +44,6 @@ export default function EditTraining() {
       console.error("No training data found in storage.");
     }
   }, []);
-
-  const { data: enrollmentsData } = useQuery(
-    GET_ENROLLMENTS,
-    {
-      variables: {
-        trainingId: trainingData?.id,
-      },
-      skip: !trainingData?.id,
-      context: {
-        headers: {
-          "session-token": session?.sessionToken,
-        },
-      },
-    }
-  );
-
-  useEffect(() => {
-    if (enrollmentsData) {
-      setParticipants(enrollmentsData.getEnrollmentsByTraining);
-    }
-  }, [enrollmentsData]);
 
   if (instructorLoading) return <p>Loading instructors...</p>;
   if (instructorError) return <p>Error loading instructors: {instructorError.message}</p>;
@@ -163,7 +139,6 @@ export default function EditTraining() {
       {/* Enrollments Table */}
       <EnrollmentsTable
         trainingId={trainingData.id}
-        participants={participants}
       />
       {/* Training materials */}
       <TrainingMaterialsTable
@@ -173,6 +148,7 @@ export default function EditTraining() {
       {/* Assessments */}
       <AssessmentsTable
         trainingId={trainingData.id}
+        canModifyAssessment={true}
       />
 
     </AdminLayout>

@@ -3,7 +3,7 @@ import { TrainingsList } from "@/components/atomic-design/organisms/trainings-li
 import { Training } from "@prisma/client";
 import AdminLayout from "@/components/layouts/admin-layout";
 import router from "next/router";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { DELETE_TRAINING, DUPLICATE_TRAINING } from "@/graphql/frontend/trainings";
 import { useSession } from "next-auth/react";
 
@@ -82,8 +82,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ trainings }) => 
             label: "View",
             onClick: (training: Training) => {
               localStorage.setItem("selectedTraining", JSON.stringify(training));
-              router.push(`/trainings/${training.id}`);
-            }
+              router.push(`/trainings/details?id=${training.id}`);
+            },
           }
         ]}
       />

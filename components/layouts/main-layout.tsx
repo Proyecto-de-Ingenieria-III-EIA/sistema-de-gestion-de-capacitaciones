@@ -15,12 +15,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     },
     {
       label: "Forum",
-      href: "/forum", // No dropdown for this button
+      href: "/forum", 
     },
     {
       label: "Progress",
-      href: "/progress", // No dropdown for this button
+      href: "/progress",
     },
+    {
+      label: "Home page",
+      href: "/",
+    }
   ];
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

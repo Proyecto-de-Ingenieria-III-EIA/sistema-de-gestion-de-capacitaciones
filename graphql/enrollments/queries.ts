@@ -47,7 +47,6 @@ export const queries = {
     });
 
     return participantsProgress;
-
     },
 
     getUserProgress: async (_: unknown, __: unknown, { db, authData }: Context) => {

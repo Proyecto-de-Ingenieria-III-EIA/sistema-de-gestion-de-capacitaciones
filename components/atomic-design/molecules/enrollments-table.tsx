@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { DELETE_ENROLLMENT, GET_AVAILABLE_USERS_FOR_TRAINING } from "@/graphql/frontend/enrollments";
+import { DELETE_ENROLLMENT, GET_AVAILABLE_USERS_FOR_TRAINING, GET_ENROLLMENTS } from "@/graphql/frontend/enrollments";
 import { SUBSCRIBE_TO_TRAINING_ADMIN } from "@/graphql/frontend/enrollments";
 import { PlusIcon } from "lucide-react";
 import { Participant } from "@/types/participant";
@@ -9,16 +9,15 @@ import { Combobox } from "@/components/ui/combobox";
 
 interface EnrollmentsTableProps {
   trainingId: string;
-  participants: Participant[];
 }
 
 export default function EnrollmentsTable({
   trainingId,
-  participants,
 }: EnrollmentsTableProps) {
     const { data: session } = useSession();
     const [showAddParticipant, setShowAddParticipant] = useState(false);
     const [selectedUser, setSelectedUser] = useState<Participant | null>(null);
+    const [participants, setParticipants] = useState<Participant[] | null>([]);
 
   const { data, loading, error } = useQuery(GET_AVAILABLE_USERS_FOR_TRAINING, {
     variables: { trainingId },
@@ -29,6 +28,27 @@ export default function EnrollmentsTable({
     },
     skip: !showAddParticipant, 
   });
+
+    const { data: enrollmentsData } = useQuery(
+      GET_ENROLLMENTS,
+      {
+        variables: {
+          trainingId: trainingId,
+        },
+        skip: !trainingId,
+        context: {
+          headers: {
+            "session-token": session?.sessionToken,
+          },
+        },
+      }
+    );
+  
+    useEffect(() => {
+      if (enrollmentsData) {
+        setParticipants(enrollmentsData.getEnrollmentsByTraining);
+      }
+    }, [enrollmentsData]);
 
   const [subscribeToTraining] = useMutation(SUBSCRIBE_TO_TRAINING_ADMIN, {
     refetchQueries: ["GetEnrollmentsByTraining"], 
@@ -86,7 +106,7 @@ export default function EnrollmentsTable({
           </tr>
         </thead>
         <tbody>
-          {participants.map((participant) => (
+          {participants && participants.map((participant) => (
             <tr key={participant.id}>
               <td className="border border-gray-300 px-4 py-2">{participant.user.name}</td>
               <td className="border border-gray-300 px-4 py-2">{participant.user.email}</td>

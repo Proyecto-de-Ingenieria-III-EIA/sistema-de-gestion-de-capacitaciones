@@ -32,7 +32,7 @@ const Home = () => {
           buttons={[
             {
               label: "View Training",
-              onClick: (training) => router.push(`/trainings/${training.id}`), // Redirect to training-specific page
+              onClick: (training) => router.push(`/trainings/user?id=${training.id}`),
             },
           ]}
         />

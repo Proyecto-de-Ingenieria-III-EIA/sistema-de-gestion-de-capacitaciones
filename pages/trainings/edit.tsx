@@ -2,7 +2,7 @@ import AssessmentsTable from "@/components/atomic-design/molecules/assessments-t
 import EnrollmentsTable from "@/components/atomic-design/molecules/enrollments-table";
 import TrainingMaterialsTable from "@/components/atomic-design/molecules/training-materials-table";
 import AdminLayout from "@/components/layouts/admin-layout";
-import EditForm, { FieldConfig } from "@/components/templatesa/Edit";
+import EditForm, { FieldConfig } from "@/components/templates/Edit";
 import { UPDATE_TRAINING } from "@/graphql/frontend/trainings";
 import { GET_INSTRUCTORS } from "@/graphql/frontend/users";
 import { TrainingWithInstructor } from "@/types/training-instructor";

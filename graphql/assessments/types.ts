@@ -33,11 +33,24 @@ export const assessmentTypes = gql`
     updatedAt: DateTime
   }
 
+  type Metrics {
+    meanScore: Float!
+    maxScore: Float!
+    minScore: Float!
+  }
+
+  input AnswerInput {
+    questionId: String!
+    selectedAnswer: String!
+  }
+
   ## Queries
   type Query {
     getAssessments(trainingId: String!): [Assessment]
     getAssessmentResults(assessmentId: String!): [AssessmentResult]
+    getAssessmentById(assessmentId: String!): Assessment
     getAssessmentResultsByUser(userId: String!, trainingId: String!): [AssessmentResult]
+    getAssessmentMetrics(assessmentId: String!): Metrics
   }
 
   ## Mutations
@@ -62,11 +75,5 @@ export const assessmentTypes = gql`
       userId: String!
       answers: [AnswerInput!]!
     ): AssessmentResult
-  }
-
-  ## Input Types
-  input AnswerInput {
-    questionId: String!
-    selectedAnswer: String!
   }
 `;

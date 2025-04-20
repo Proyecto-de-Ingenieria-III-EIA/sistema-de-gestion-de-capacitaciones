@@ -140,16 +140,12 @@ export const mutations = {
     });
   },
 
- 
-
-  // Submit an assessment result
   submitAssessmentResult: async (
     _: unknown,
     args: { assessmentId: string; userId: string; answers: { questionId: string; selectedAnswer: string }[] },
     { db }: Context
   ) => {
 
-    // traer las repsuestas correctas
     const questions = await db.question.findMany({
       where: { assessmentId: args.assessmentId },
       select: { id: true, answer: true },
@@ -159,7 +155,6 @@ export const mutations = {
       throw new Error('Assessment has no questions');
     }
 
-    // autoevaluar
     let correctAnswers = 0;
     for  (const answer of args.answers) {
       const question = questions.find( q => q.id === answer.questionId);

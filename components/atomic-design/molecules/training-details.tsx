@@ -12,8 +12,8 @@ export default function TrainingDetails() {
   const {data: session} = useSession();
   const { id } = router.query;
 
-  const handleMetrics = useCallback((assessmentId: string) => { // Not yet implemented
-    alert(`Metrics for assessment ID: ${assessmentId}`);
+  const handleMetrics = useCallback((assessmentId: string) => {
+    router.push(`/assessments/metrics?id=${assessmentId}`);
   }, []);
 
   const renderAction = useCallback(
@@ -27,6 +27,14 @@ export default function TrainingDetails() {
     ),
     [handleMetrics]
   );
+
+  const handleNavigateToForum = () => {
+    router.push("/forum");
+  }
+
+  const handleNavigateToEdit = () => {
+    router.push(`/trainings/edit?id=${id}`);
+  }
 
   const { data, loading, error } = useQuery(GET_TRAINING_BY_ID, {
     variables: { trainingId: id },
@@ -57,10 +65,27 @@ export default function TrainingDetails() {
         <strong>Created At:</strong> {new Date(training?.createdAt).toLocaleString()}
       </p>
 
+        {/* Buttons */}
+        <div className="flex justify-end space-x-4 mt-6">
+        <button
+          onClick={handleNavigateToForum}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        >
+          Forum
+        </button>
+        <button
+          onClick={handleNavigateToEdit}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+        >
+          Edit
+        </button>
+      </div>
+
       {/* Training Materials */}
       <div className="mt-8">
         <TrainingMaterialsTable 
           trainingId={id as string}
+          canModifyMaterial={true}
         />
       </div>
 

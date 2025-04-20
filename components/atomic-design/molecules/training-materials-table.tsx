@@ -17,15 +17,16 @@ interface TrainingMaterial {
 
 interface TrainingMaterialsTableProps {
   trainingId: string;
+  canModifyMaterial: boolean;
 }
 
-export default function TrainingMaterialsTable({ trainingId }: TrainingMaterialsTableProps) {
+export default function TrainingMaterialsTable({ trainingId, canModifyMaterial }: TrainingMaterialsTableProps) {
   const { data: session } = useSession();
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [fileType, setFileType] = useState("");
   const [fileUrl, setFileUrl] = useState("");
 
-  const { data, loading, error } = useQuery(GET_TRAINING_MATERIALS, {
+  const { data } = useQuery(GET_TRAINING_MATERIALS, {
     variables: { trainingId },
     context: {
       headers: {
@@ -98,8 +99,12 @@ export default function TrainingMaterialsTable({ trainingId }: TrainingMaterials
           <tr>
             <th className="border border-gray-300 px-4 py-2">File Type</th>
             <th className="border border-gray-300 px-4 py-2">File URL</th>
+            {canModifyMaterial && (
             <th className="border border-gray-300 px-4 py-2">Created At</th>
+            )}
+            {canModifyMaterial && (
             <th className="border border-gray-300 px-4 py-2">Actions</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -116,72 +121,80 @@ export default function TrainingMaterialsTable({ trainingId }: TrainingMaterials
                   {material.fileUrl}
                 </a>
               </td>
+              {canModifyMaterial && (
               <td className="border border-gray-300 px-4 py-2">
                 {new Date(material.createdAt).toLocaleString()}
               </td>
+              )}
               <td className="border border-gray-300 px-4 py-2">
+                {canModifyMaterial && (
                 <button
                   onClick={() => handleDeleteMaterial(material.id)}
                   className="text-red-500 hover:text-red-700"
                 >
                   Remove
                 </button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <button
-        onClick={() => setShowAddMaterial(!showAddMaterial)}
-        className="mt-4 flex items-center text-blue-500 hover:text-blue-700"
-      >
-        <PlusIcon className="w-5 h-5 mr-2" />
-        {showAddMaterial ? "Close Form" : "Add Material"}
-      </button>
+      {canModifyMaterial && (
+      <>
+        <button
+          onClick={() => setShowAddMaterial(!showAddMaterial)}
+          className="mt-4 flex items-center text-blue-500 hover:text-blue-700"
+        >
+          <PlusIcon className="w-5 h-5 mr-2" />
+          {showAddMaterial ? "Close Form" : "Add Material"}
+        </button>
 
-      <div
-        className={`overflow-hidden transition-all duration-500 ${
-          showAddMaterial ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Add Training Material</h3>
-          <div className="mb-2">
-            <label className="block text-sm font-medium">File Type:</label>
-            <input
-              type="text"
-              value={fileType}
-              onChange={(e) => setFileType(e.target.value)}
-              placeholder="e.g., pdf, video"
-              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
-            />
+        <div
+          className={`overflow-hidden transition-all duration-500 ${
+            showAddMaterial ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">Add Training Material</h3>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">File Type:</label>
+              <input
+                type="text"
+                value={fileType}
+                onChange={(e) => setFileType(e.target.value)}
+                placeholder="e.g., pdf, video"
+                className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium">File URL:</label>
+              <input
+                type="text"
+                value={fileUrl}
+                onChange={(e) => setFileUrl(e.target.value)}
+                placeholder="Enter file URL"
+                className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <button
+              onClick={handleAddMaterial}
+              disabled={adding}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            >
+              {adding ? "Submitting..." : "Add Material"}
+            </button>
+            <button
+              onClick={() => setShowAddMaterial(false)}
+              className="ml-4 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+            >
+              Cancel
+            </button>
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium">File URL:</label>
-            <input
-              type="text"
-              value={fileUrl}
-              onChange={(e) => setFileUrl(e.target.value)}
-              placeholder="Enter file URL"
-              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <button
-            onClick={handleAddMaterial}
-            disabled={adding}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-          >
-            {adding ? "Submitting..." : "Add Material"}
-          </button>
-          <button
-            onClick={() => setShowAddMaterial(false)}
-            className="ml-4 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
         </div>
-      </div>
+      </>
+      )}
     </div>
   );
 }

@@ -143,6 +143,7 @@ export default function EditTraining() {
       {/* Training materials */}
       <TrainingMaterialsTable
         trainingId={trainingData.id}
+        canModifyMaterial={true}
       />
 
       {/* Assessments */}

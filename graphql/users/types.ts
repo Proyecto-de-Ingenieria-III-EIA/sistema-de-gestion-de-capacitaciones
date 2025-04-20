@@ -23,7 +23,6 @@ export const userTypes = gql`
 
   type UserAssessmentProgress {
     totalAssessments: Int!
-    completedAssessments: Int!
     passedAssessments: Int!
     progress: Float!
   }

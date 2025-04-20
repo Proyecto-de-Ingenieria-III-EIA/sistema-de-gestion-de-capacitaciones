@@ -11,11 +11,6 @@ export const GET_ASSESSMENTS = gql`
                 options
                 answer
             }
-            assessmentResults {
-                id
-                score
-                updatedAt
-            }
             createdAt
             updatedAt
         }
@@ -29,9 +24,30 @@ export const GET_ASSESSMENT_RESULTS = gql`
             user {
             id
             name
+            email
             }
             score
             createdAt
+        }
+    }
+`;
+
+export const GET_ASSESSMENT_BY_ID = gql`
+    query GetAssessmentById($assessmentId: String!) {
+        getAssessmentById(assessmentId: $assessmentId) {
+            id
+            title
+            training{
+                id
+            }
+            questions {
+                id
+                question
+                options
+                answer
+            }
+            createdAt
+            updatedAt
         }
     }
 `;
@@ -97,11 +113,30 @@ export const DELETE_QUESTION = gql`
     }
 `;
 
+export const GET_ASSESSMENT_METRICS = gql`
+query GetAssessmentMetrics($assessmentId: String!) {
+  getAssessmentMetrics(assessmentId: $assessmentId) {
+    meanScore
+    maxScore
+    minScore
+  }
+}
+`;
+
 export const SUBMIT_ASSESSMENT_RESULT = gql`
-    mutation SubmitAssessmentResult($assessmentId: String!, $userId: String!, $answers: [AnswerInput!]!) {
-        submitAssessmentResult(assessmentId: $assessmentId, userId: $userId, answers: $answers) {
-            id
-            score
-        }
+  mutation SubmitAssessmentResult(
+    $assessmentId: String!
+    $userId: String!
+    $answers: [AnswerInput!]!
+  ) {
+    submitAssessmentResult(
+      assessmentId: $assessmentId
+      userId: $userId
+      answers: $answers
+    ) {
+      id
+      score
+      createdAt
     }
+  }
 `;

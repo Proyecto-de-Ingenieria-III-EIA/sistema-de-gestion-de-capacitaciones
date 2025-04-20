@@ -41,25 +41,26 @@ export const queries = {
       },
     });
   
-    const assessmentResults = await db.assessmentResult.findMany({
+    const assessmentResults = await db.assessmentResult.groupBy({
+      by: ['assessmentId'],
       where: {
         userId: args.userId,
         assessmentId: { in: assessments.map((a) => a.id) },
       },
-      select: {
+      _max: {
         score: true,
       },
     });
   
     // Calculate progress
     const totalAssessments = assessments.length;
-    const completedAssessments = assessmentResults.length;
-    const passedAssessments = assessmentResults.filter((result) => result.score >= 80).length; 
-    const progress = totalAssessments > 0 ? (completedAssessments / totalAssessments) * 100 : 0;
+    const passedAssessments = assessmentResults.filter(
+      (result) => (result._max?.score ?? 0) >= 80
+    ).length;
+    const progress = totalAssessments > 0 ? (passedAssessments / totalAssessments) * 100 : 0;
   
     return {
       totalAssessments,
-      completedAssessments,
       passedAssessments,
       progress: progress.toFixed(2),
     };

@@ -19,6 +19,7 @@ export default startServerAndCreateNextHandler(server, {
 
     const authData = await prisma.$queryRaw<AuthData[]>`
     select 
+    u.id,
     u.email,
     r."name" as "role",
     s.expires
@@ -29,7 +30,7 @@ export default startServerAndCreateNextHandler(server, {
             on u."roleId" = r.id
     where s."sessionToken" = ${token}
     `;
-
+    
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     return {

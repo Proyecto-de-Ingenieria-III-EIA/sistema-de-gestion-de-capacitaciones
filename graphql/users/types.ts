@@ -21,6 +21,12 @@ export const userTypes = gql`
     comments: [Comment]
   }
 
+  type UserAssessmentProgress {
+    totalAssessments: Int!
+    passedAssessments: Int!
+    progress: Float!
+  }
+
   ## Queries
   type Query {
     # Users
@@ -28,7 +34,11 @@ export const userTypes = gql`
     getUserById(id: String!): User
     getUserByEmail(email: String!): User
     getUserTrainings: [Training]
-    
+    getInstructors: [User]
+    getUserAssessmentProgressInTraining(
+      userId: String!
+      trainingId: String!
+    ): UserAssessmentProgress
   }
 
   ## Mutations
@@ -44,7 +54,6 @@ export const userTypes = gql`
 
     deleteUser(id: String!): Boolean
     
-    assignTrainingToUser(userId: String!, trainingId: String!): User
   }
 
  

@@ -20,7 +20,8 @@ export const Card: React.FC<CardProps> = ({ imageSrc, title, text, buttons }) =>
 
       {/* Text */}
       <div className="mt-4">
-        <Title>{text}</Title>
+        <Title>{title}</Title>
+        <h2 className="text-lg font-semibold">{text}</h2>
       </div>
 
       {/* Buttons */}

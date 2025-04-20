@@ -19,7 +19,22 @@ export const mutations = {
     });
   },
 
-  // Add a question to an assessment
+  deleteAssessment: async (_: unknown, args: { assessmentId: string }, { db, authData }: Context) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+  
+    const existingAssessment = await db.assessment.findUnique({
+      where: { id: args.assessmentId },
+    });
+  
+    if (!existingAssessment) {
+      throw new Error('Assessment not found');
+    }
+  
+    return db.assessment.delete({
+      where: { id: args.assessmentId },
+    });
+  },
+
   addQuestion: async (
     _: unknown,
     args: {
@@ -103,16 +118,34 @@ export const mutations = {
     });
   },
 
- 
+  // Delete a question from an assessment
+  deleteQuestion: async (
+    _: unknown,
+    args: { questionId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+    const question = await db.question.findUnique({
+      where: { id: args.questionId },
+      include: { assessment: { include: { training: { select: { isHidden: true } } } } },
+    });
+    if (!question) {
+      throw new Error('Question not found.');
+    }
+    if (!question.assessment.training.isHidden) {
+      throw new Error('Questions can only be deleted when the training is hidden.');
+    }
+    return db.question.delete({
+      where: { id: args.questionId },
+    });
+  },
 
-  // Submit an assessment result
   submitAssessmentResult: async (
     _: unknown,
     args: { assessmentId: string; userId: string; answers: { questionId: string; selectedAnswer: string }[] },
     { db }: Context
   ) => {
 
-    // traer las repsuestas correctas
     const questions = await db.question.findMany({
       where: { assessmentId: args.assessmentId },
       select: { id: true, answer: true },
@@ -122,7 +155,6 @@ export const mutations = {
       throw new Error('Assessment has no questions');
     }
 
-    // autoevaluar
     let correctAnswers = 0;
     for  (const answer of args.answers) {
       const question = questions.find( q => q.id === answer.questionId);

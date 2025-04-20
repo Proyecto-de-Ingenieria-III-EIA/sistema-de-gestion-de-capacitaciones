@@ -1,11 +1,12 @@
 import { Context } from '@/types';
+import { validateRole } from '@/utils/validateRole';
 import { EnrollmentStatus } from '@prisma/client';
 
 export const mutations = {
   // Enrollment mutations
   subscribeToTraining: async (
     _: unknown, 
-    args: { trainingId: string }, 
+    args: { trainingId: string, userId?: string }, 
     { db, authData }: Context
   ) => {
     if (!authData) {
@@ -14,18 +15,23 @@ export const mutations = {
 
     const training = await db.training.findUnique({
       where: { id: args.trainingId },
-      select: { id: true, isPublic: true }, // tiene en cuenta si es publico o no
+      select: { id: true, isPublic: true },
     });
 
     if (!training) {
       throw new Error('Training not found');
     }
 
-    // el usuario ya esta inscrito?
+    const userId = args.userId || authData.id;
+
+    if (args.userId && authData.role !== 'ADMIN') {
+      throw new Error('Only admins can subscribe other users to a training');
+    }
+
     const existingEnrollment = await db.enrollment.findFirst({
       where: {
           trainingId: args.trainingId,
-          userId: authData.id,
+          userId: userId,
       },
     });
 
@@ -33,18 +39,19 @@ export const mutations = {
       throw new Error('Already enrolled to this training');
     }
 
-    //aprovar si es público, sino pendiente
-    const status = training.isPublic ? 'APPROVED' : 'PENDING';
+    const isAdmin = authData.role === 'ADMIN';
+
+    const status = isAdmin || training.isPublic ? 'APPROVED' : 'PENDING';
 
     const newEnrollment = await db.enrollment.create({
       data: {
         trainingId: args.trainingId,
-        userId: authData.id,
+        userId: userId,
         status
       },
       include: {
-        user: { select: { id: true, name: true, enrollments: true } }, // incluir el usuario
-        training: { select: { id: true, title: true, enrollments: true } }, // incluir el training
+        user: { select: { id: true, name: true, enrollments: true } },
+        training: { select: { id: true, title: true, enrollments: true } }, 
       },
     });
 
@@ -60,4 +67,24 @@ export const mutations = {
       where: { id: args.id },
       data: { status: args.status },
     }),
+
+    deleteEnrollment: async (
+      _: unknown,
+      args: { id: string },
+      { db, authData }: Context
+    ) => {
+      await validateRole(db, authData, ["ADMIN"]);
+    
+      const enrollment = await db.enrollment.findUnique({
+        where: { id: args.id },
+      });
+    
+      if (!enrollment) {
+        throw new Error("Enrollment not found");
+      }
+    
+      return db.enrollment.delete({
+        where: { id: args.id },
+      });
+    },
 };

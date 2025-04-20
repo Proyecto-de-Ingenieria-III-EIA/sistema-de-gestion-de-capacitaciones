@@ -138,7 +138,6 @@ export default function Header({ buttons }: HeaderProps) {
                 {buttons.map((button) => (
                   <div key={button.label} className="-mx-3">
                     {button.href ? (
-                      // Direct links like "Dashboard" and "Users"
                       <Link
                         href={button.href}
                         className="block rounded-lg py-2 pr-3.5 pl-3 text-base font-semibold text-gray-900 hover:bg-gray-50"
@@ -146,7 +145,6 @@ export default function Header({ buttons }: HeaderProps) {
                         {button.label}
                       </Link>
                     ) : (
-                      // Dropdowns like "Trainings"
                       <Disclosure>
                         <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base font-semibold text-gray-900 hover:bg-gray-50">
                           {button.label}

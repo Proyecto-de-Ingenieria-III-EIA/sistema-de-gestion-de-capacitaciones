@@ -27,6 +27,14 @@ export const userTypes = gql`
     progress: Float!
   }
 
+  input UpdateUserInput {
+    id: String!
+    name: String
+    phone: String
+    area: String
+    roleId: Int
+  }
+
   ## Queries
   type Query {
     # Users
@@ -51,6 +59,9 @@ export const userTypes = gql`
       area: String
       image: String
     ): User
+
+    updateUsers(users: [UpdateUserInput!]!): [User]
+
 
     deleteUser(id: String!): Boolean
     

@@ -4,13 +4,31 @@ import { validateRole } from '@/utils/validateRole';
 
 export const queries = {
 
-  getUsers: async ({ db, authData }: Context) => {
+  getUsers: async (_: unknown, __: unknown, { db, authData }: Context) => {
     validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
-    return db.user.findMany();
+    return db.user.findMany(
+      {
+        include: {
+          role: true,
+        }
+      }
+    );
   },
 
-  getUserById: async (_: unknown, args: { id: string }, { db }: Context) =>
-    db.user.findUnique({ where: { id: args.id } }),
+  getUserById: async (_: unknown, args: { id: string }, { db, authData }: Context) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+    
+    return db.user.findUnique({ where: { id: args.id }, include: {
+      role: true,
+      enrollments: {
+        include: {
+          training: true,
+        }
+      }
+    }})
+  
+  },
+
 
   getUserByEmail: async (
     _: unknown,

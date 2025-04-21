@@ -8,7 +8,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const buttons = [
         {
           label: "Users",
-          href: "/admin-users",
+          href: "/admin/users",
         },
         {
           label: "Trainings",

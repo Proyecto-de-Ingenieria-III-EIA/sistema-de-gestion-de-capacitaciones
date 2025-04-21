@@ -41,7 +41,10 @@ export default function TrainingDetailsForUser() {
 
   const handleNavigateToCertificate = () => {
     if (progress?.progress === 100) {
-      router.push(`/trainings/certificate?id=${id}`);
+      const trainingName = encodeURIComponent(training?.title || "Training");
+      const userName = encodeURIComponent(session?.user?.name || "User");
+      const certificateUrl = `/trainings/certificate?id=${id}&trainingName=${trainingName}&userName=${userName}`;
+      window.open(certificateUrl, "_blank");
     }
     else {
       alert("You must complete the training before you can access the certificate.");
@@ -53,6 +56,8 @@ export default function TrainingDetailsForUser() {
 
   const training = data?.getTrainingById;
   const progress = participantProgress?.getUserAssessmentProgressInTraining;
+
+  console.log("Training Details:", training);
 
   return (
     <MainLayout>

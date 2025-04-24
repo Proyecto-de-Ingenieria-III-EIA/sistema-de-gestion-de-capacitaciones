@@ -93,7 +93,9 @@ export default function EnrollmentsTable({
     } catch (err) {
       console.error('Error adding participant:', err);
       toast('Error Adding Participant', {
-        description: `There was an error adding the participant: ${err.message}`,
+        description: `There was an error adding the participant: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -124,7 +126,9 @@ export default function EnrollmentsTable({
     } catch (err) {
       console.error('Error removing participant:', err);
       toast('Participant Deletion Error', {
-        description: `There was an error removing the participant: ${err.message}`,
+        description: `There was an error removing the participant: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -165,7 +169,7 @@ export default function EnrollmentsTable({
                           Are you absolutely sure?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. The assessment will be
+                          This action cannot be undone. The enrollment will be
                           permanently deleted.
                         </AlertDialogDescription>
                       </AlertDialogHeader>

@@ -111,7 +111,9 @@ export default function TrainingMaterialsTable({
     } catch (err) {
       console.error('Error adding training material:', err);
       toast('Training Material Addition Error', {
-        description: `There was an error adding the training material: ${err.message}`,
+        description: `There was an error adding the training material: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -135,7 +137,9 @@ export default function TrainingMaterialsTable({
     } catch (err) {
       console.error('Error deleting training material:', err);
       toast('Training Material Deletion Error', {
-        description: `There was an error deleting the training material: ${err.message}`,
+        description: `There was an error deleting the training material: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -270,7 +274,7 @@ export default function TrainingMaterialsTable({
             <AlertDialogAction
               onClick={() => {
                 if (selectedMaterialId)
-                  handleDeleteMaterial(selecRmtedMaterialId);
+                  handleDeleteMaterial(selectedMaterialId);
                 setDialogOpen(false);
               }}
             >

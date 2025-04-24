@@ -43,7 +43,7 @@ export default function UserDetails() {
 
   const handleNavigateToCertificate = (training: any) => {
     if (training.progress === 100) {
-      const trainingName = encodeURIComponent(training?.title || 'Training');
+      const trainingName = encodeURIComponent(training?.trainingTitle || 'Training');
       const userName = encodeURIComponent(session?.user?.name || 'User');
       const certificateUrl = `/trainings/certificate?id=${id}&trainingName=${trainingName}&userName=${userName}`;
       window.open(certificateUrl, '_blank');

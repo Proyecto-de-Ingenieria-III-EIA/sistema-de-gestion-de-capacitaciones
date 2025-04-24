@@ -3,7 +3,6 @@ import { validateAuth } from '@/utils/validateAuth';
 import { validateRole } from '@/utils/validateRole';
 
 export const queries = {
-  // Get assessments for a specific training
   getAssessments: async (
     _: unknown,
     args: { trainingId: string },
@@ -40,7 +39,7 @@ export const queries = {
     await validateAuth(authData);
 
     if (!args.assessmentId) {
-      throw new Error("Assessment ID is required.");
+      throw new Error('Assessment ID is required.');
     }
 
     const assessment = await db.assessment.findUnique({
@@ -60,16 +59,15 @@ export const queries = {
     { db, authData }: Context
   ) => {
     await validateAuth(authData);
-      
     return db.assessmentResult.findMany({
       where: {
         userId: args.userId,
         assessment: {
-          trainingId: args.trainingId, 
+          trainingId: args.trainingId,
         },
       },
       include: {
-        assessment: true, 
+        assessment: true,
       },
     });
   },
@@ -102,5 +100,5 @@ export const queries = {
       maxScore,
       minScore,
     };
-  }
+  },
 };

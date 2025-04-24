@@ -16,94 +16,102 @@ export const GET_TRAININGS_BY_USER = gql`
 export const GET_TRAININGS = gql`
   query GetTrainings {
     getTrainings {
-    id
-    title
-    description
-    isHidden
-    isPublic
-    imageSrc
-    createdAt
-    updatedAt
-    instructor {
-      id
-      name
-      email
-    }
-    materials {
-      id
-      fileType
-      fileUrl
-    }
-    assessments {
       id
       title
-      questions {
-        id
-        question
-        options
-        answer
-      }
-    }
-    enrollments {
-      id
-      status
-      progress
-      user {
+      description
+      isHidden
+      isPublic
+      imageSrc
+      createdAt
+      updatedAt
+      instructor {
         id
         name
         email
-        area
+      }
+      materials {
+        id
+        fileType
+        fileUrl
+      }
+      assessments {
+        id
+        title
+        questions {
+          id
+          question
+          options
+          answer
+        }
+      }
+      enrollments {
+        id
+        status
+        progress
+        user {
+          id
+          name
+          email
+          area
+        }
       }
     }
   }
-}
 `;
 
 export const GET_TRAINING_BY_ID = gql`
   query GetTrainingById($trainingId: String!) {
     getTrainingById(trainingId: $trainingId) {
-    id
-    title
-    description
-    isHidden
-    isPublic
-    imageSrc
-    createdAt
-    updatedAt
-    instructor {
       id
-      name
-      email
-    }
-    assessments {
-      id
-    }
-    enrollments {
-      id
-      status
-      progress
+      title
+      description
+      isHidden
+      isPublic
+      imageSrc
+      createdAt
+      updatedAt
+      instructor {
+        id
+        name
+        email
+      }
+      assessments {
+        id
+      }
+      enrollments {
+        id
+        status
+        progress
+      }
     }
   }
-}
 `;
 
 export const CREATE_TRAINING = gql`
-mutation createTraining($title: String!, $description: String!, $instructorId: String!) {
-  createTraining(title: $title, description: $description, instructorId: $instructorId) {
-    id
-    title
-    description
-    isHidden
-    isPublic
-    imageSrc
-    updatedAt
-    createdAt
-    instructor {
+  mutation createTraining(
+    $title: String!
+    $description: String!
+    $instructorId: String!
+  ) {
+    createTraining(
+      title: $title
+      description: $description
+      instructorId: $instructorId
+    ) {
       id
-      name
+      title
+      description
+      isHidden
+      isPublic
+      imageSrc
+      updatedAt
+      createdAt
+      instructor {
+        id
+        name
+      }
     }
   }
-}
 `;
 
 export const UPDATE_TRAINING = gql`
@@ -138,7 +146,7 @@ export const UPDATE_TRAINING = gql`
 
 export const DELETE_TRAINING = gql`
   mutation deleteTraining($id: String!) {
-    deleteTraining(id: $id){
+    deleteTraining(id: $id) {
       id
     }
   }
@@ -156,8 +164,16 @@ export const GET_TRAINING_MATERIALS = gql`
 `;
 
 export const ADD_TRAINING_MATERIAL = gql`
-  mutation addTrainingMaterial($trainingId: String!, $fileType: String!, $fileUrl: String!) {
-    createTrainingMaterial(trainingId: $trainingId, fileType: $fileType, fileUrl: $fileUrl) {
+  mutation addTrainingMaterial(
+    $trainingId: String!
+    $fileType: String!
+    $fileUrl: String!
+  ) {
+    createTrainingMaterial(
+      trainingId: $trainingId
+      fileType: $fileType
+      fileUrl: $fileUrl
+    ) {
       id
       training {
         id

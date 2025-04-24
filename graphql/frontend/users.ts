@@ -45,10 +45,15 @@ export const GET_USER_PROGRESS = gql`
   }
 `;
 
-
 export const GET_ASSESSMENT_PROGRESS_BY_TRAINING = gql`
-  query GetUserAssessmentProgressInTraining($userId: String!, $trainingId: String!) {
-    getUserAssessmentProgressInTraining(userId: $userId, trainingId: $trainingId) {
+  query GetUserAssessmentProgressInTraining(
+    $userId: String!
+    $trainingId: String!
+  ) {
+    getUserAssessmentProgressInTraining(
+      userId: $userId
+      trainingId: $trainingId
+    ) {
       totalAssessments
       passedAssessments
       progress

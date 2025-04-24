@@ -2,13 +2,11 @@ import { Context } from '@/types';
 import { validateRole } from '@/utils/validateRole';
 
 export const mutations = {
-  // Create a new assessment
   createAssessment: async (
     _: unknown,
     args: { trainingId: string; title: string },
     { db, authData }: Context
   ) => {
-
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
     return db.assessment.create({
@@ -19,17 +17,21 @@ export const mutations = {
     });
   },
 
-  deleteAssessment: async (_: unknown, args: { assessmentId: string }, { db, authData }: Context) => {
+  deleteAssessment: async (
+    _: unknown,
+    args: { assessmentId: string },
+    { db, authData }: Context
+  ) => {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
-  
+
     const existingAssessment = await db.assessment.findUnique({
       where: { id: args.assessmentId },
     });
-  
+
     if (!existingAssessment) {
       throw new Error('Assessment not found');
     }
-  
+
     return db.assessment.delete({
       where: { id: args.assessmentId },
     });
@@ -44,8 +46,7 @@ export const mutations = {
       answer: string;
     },
     { db, authData }: Context
-  ) =>{
-
+  ) => {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
     if (!args.options.includes(args.answer)) {
@@ -59,10 +60,12 @@ export const mutations = {
     });
 
     if (!assessment) {
-      throw new Error("Assessment not found.");
+      throw new Error('Assessment not found.');
     }
     if (!assessment.training.isHidden) {
-      throw new Error("Questions can only be modified when the training is hidden.");
+      throw new Error(
+        'Questions can only be modified when the training is hidden.'
+      );
     }
 
     return db.question.create({
@@ -75,7 +78,6 @@ export const mutations = {
     });
   },
 
-
   editQuestion: async (
     _: unknown,
     args: {
@@ -86,13 +88,13 @@ export const mutations = {
     },
     { db, authData }: Context
   ) => {
-
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
-    
     const existingQuestion = await db.question.findUnique({
       where: { id: args.questionId },
-      include: { assessment: { include: { training: { select: { isHidden: true } } } } },
+      include: {
+        assessment: { include: { training: { select: { isHidden: true } } } },
+      },
     });
 
     if (!existingQuestion) {
@@ -100,10 +102,11 @@ export const mutations = {
     }
 
     if (!existingQuestion.assessment.training.isHidden) {
-      throw new Error('Questions can only be edited when the training is hidden.');
+      throw new Error(
+        'Questions can only be edited when the training is hidden.'
+      );
     }
 
-    
     if (args.answer && args.options && !args.options.includes(args.answer)) {
       throw new Error('Answer must be one of the options.');
     }
@@ -127,13 +130,17 @@ export const mutations = {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
     const question = await db.question.findUnique({
       where: { id: args.questionId },
-      include: { assessment: { include: { training: { select: { isHidden: true } } } } },
+      include: {
+        assessment: { include: { training: { select: { isHidden: true } } } },
+      },
     });
     if (!question) {
       throw new Error('Question not found.');
     }
     if (!question.assessment.training.isHidden) {
-      throw new Error('Questions can only be deleted when the training is hidden.');
+      throw new Error(
+        'Questions can only be deleted when the training is hidden.'
+      );
     }
     return db.question.delete({
       where: { id: args.questionId },
@@ -142,22 +149,25 @@ export const mutations = {
 
   submitAssessmentResult: async (
     _: unknown,
-    args: { assessmentId: string; userId: string; answers: { questionId: string; selectedAnswer: string }[] },
+    args: {
+      assessmentId: string;
+      userId: string;
+      answers: { questionId: string; selectedAnswer: string }[];
+    },
     { db }: Context
   ) => {
-
     const questions = await db.question.findMany({
       where: { assessmentId: args.assessmentId },
       select: { id: true, answer: true },
     });
 
-    if ( questions.length === 0 ) {
+    if (questions.length === 0) {
       throw new Error('Assessment has no questions');
     }
 
     let correctAnswers = 0;
-    for  (const answer of args.answers) {
-      const question = questions.find( q => q.id === answer.questionId);
+    for (const answer of args.answers) {
+      const question = questions.find((q) => q.id === answer.questionId);
       if (question?.answer === answer.selectedAnswer) {
         correctAnswers++;
       }
@@ -169,8 +179,8 @@ export const mutations = {
       data: {
         assessmentId: args.assessmentId,
         userId: args.userId,
-        score
+        score,
       },
     });
-  }
+  },
 };

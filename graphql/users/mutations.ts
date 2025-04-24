@@ -2,7 +2,6 @@ import { Context } from '@/types';
 import { validateRole } from '@/utils/validateRole';
 
 export const mutations = {
-  // User mutations
   updateUser: async (
     _: unknown,
     args: {
@@ -22,11 +21,19 @@ export const mutations = {
         area: args.area,
         image: args.image,
       },
-  }),
+    }),
 
   updateUsers: async (
     _: unknown,
-    args: { users: { id: string; name?: string; phone?: string; area?: string; roleId?: number }[] },
+    args: {
+      users: {
+        id: string;
+        name?: string;
+        phone?: string;
+        area?: string;
+        roleId?: number;
+      }[];
+    },
     { db, authData }: Context
   ) => {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
@@ -38,11 +45,14 @@ export const mutations = {
           name: user.name,
           phone: user.phone,
           area: user.area,
-          roleId: typeof user.roleId === "string" ? parseInt(user.roleId, 10) : user.roleId,
+          roleId:
+            typeof user.roleId === 'string'
+              ? parseInt(user.roleId, 10)
+              : user.roleId,
         },
       })
     );
-  
+
     return Promise.all(updatePromises);
   },
 

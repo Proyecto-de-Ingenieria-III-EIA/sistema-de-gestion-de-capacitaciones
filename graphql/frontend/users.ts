@@ -56,6 +56,18 @@ export const GET_ASSESSMENT_PROGRESS_BY_TRAINING = gql`
   }
 `;
 
+export const GET_PROGRESS_IN_TRAININGS = gql`
+  query GetUserProgressForTrainings($userId: String!) {
+    getUserProgressForTrainings(userId: $userId) {
+      trainingId
+      trainingTitle
+      totalAssessments
+      passedAssessments
+      progress
+    }
+  }
+`;
+
 export const UPDATE_USERS = gql`
   mutation UpdateUsers($users: [UpdateUserInput!]!) {
     updateUsers(users: $users) {
@@ -83,12 +95,12 @@ export const GET_USER_PROFILE = gql`
       }
       createdAt
       updatedAt
-
       enrollments {
         id
-        progress
-        status
-        trainin
+        training {
+          id
+          title
+        }
       }
     }
   }

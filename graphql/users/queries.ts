@@ -84,4 +84,38 @@ export const queries = {
     };
   },
 
+  getUserProgressForTrainings: async (
+    _: unknown,
+    args: { userId: string; trainingIds: string[] },
+    { db, authData }: Context
+  ) => {
+    validateAuth(authData);
+  
+    const enrollments = await db.enrollment.findMany({
+      where: { userId: args.userId },
+      include: {
+        training: true,
+      },
+    });
+
+    const progressResults = await Promise.all(
+      enrollments.map(async (enrollment) => {
+        const trainingId = enrollment.training.id;
+  
+        const progress = await queries.getUserAssessmentProgressInTraining(
+          _,
+          { userId: args.userId, trainingId },
+          { db, authData }
+        );
+  
+        return {
+          trainingId,
+          trainingTitle: enrollment.training.title,
+          ...progress,
+        };
+      })
+    );
+
+    return progressResults;
+  },
 };

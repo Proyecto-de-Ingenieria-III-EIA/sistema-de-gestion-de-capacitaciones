@@ -1,6 +1,6 @@
 "use client"
 
-import Header from "@/components/atomic-design/organisms/header" // Asegúrate del path
+import Header from "@/components/atomic-design/organisms/header"
 import { ChartPieIcon } from "@heroicons/react/24/outline";
 import React from "react"
 
@@ -24,9 +24,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       
-      <Header buttons={buttons} />
+      <Header buttons={buttons} firstLinkHref="/admin-dashboard" />
 
-      {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 overflow-auto">
         {children}
       </main>

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import AdminLayout from "@/components/layouts/admin-layout";
 import { roleMapping } from "@/types/roles";
+import { useRouter } from "next/router";
 
 export default function AdminUsers() {
+  const router = useRouter();
   const { data: session } = useSession();
   const { data, loading, error } = useQuery(GET_USERS, {
     context: {
@@ -162,7 +164,7 @@ export default function AdminUsers() {
                         </td>
                         <td className="px-4 py-2 border">
                         <button
-                            onClick={() => alert(`Details for ${user.name}`)}
+                            onClick={() => router.push(`/profile/user?id=${user.id}`)}
                             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
                         >
                             Details

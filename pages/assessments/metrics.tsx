@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import { GET_ASSESSMENT_METRICS, GET_ASSESSMENT_RESULTS } from "@/graphql/frontend/assessments";
 import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import AdminLayout from "@/components/layouts/admin-layout";
 
 export default function MetricsPage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function MetricsPage() {
   const users = userResults?.getAssessmentResults;
 
   return (
+    <AdminLayout>
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Assessment Metrics</h1>
   
@@ -71,5 +73,6 @@ export default function MetricsPage() {
         <p className="text-gray-500">No users have taken the assessment.</p>
       )}
     </div>
+    </AdminLayout>
   );
 }

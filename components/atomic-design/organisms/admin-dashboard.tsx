@@ -11,18 +11,17 @@ import {
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import {
+  AlertDialog,
   AlertDialogHeader,
   AlertDialogFooter,
-} from '@/components/ui/alert-dialog';
-import {
-  AlertDialog,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogCancel,
   AlertDialogAction,
-} from '@radix-ui/react-alert-dialog';
+} from '@/components/ui/alert-dialog';
+import { Delete } from 'lucide-react';
 
 interface AdminDashboardProps {
   trainings: Training[];
@@ -32,6 +31,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   trainings,
 }) => {
   const { data: session } = useSession();
+  const [deleteTrainingId, setDeleteTrainingId] = React.useState<string | null>(null);
 
   const [deleteTraining] = useMutation(DELETE_TRAINING, {
     context: {
@@ -51,20 +51,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     refetchQueries: ['GetTrainings'],
   });
 
-  const handleDeleteTraining = async (training: Training) => {
+  const handleDeleteTraining = async (trainingId: string) => {
     try {
-      await deleteTraining({ variables: { id: training.id } });
-      toast('Training Duplication Success', {
+      await deleteTraining({ variables: { id: trainingId } });
+      toast('Training Deletion Success', {
         description: `The training has been deleted successfully.`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
         },
       });
+      setDeleteTrainingId(null);
     } catch (err) {
       console.error('Error deleting training:', err);
       toast('Training Deletion Error', {
-        description: `There was an error deleting the training: ${err.message}`,
+        description: `There was an error deleting the training: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -86,7 +89,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     } catch (err) {
       console.error('Error duplicating training:', err);
       toast('Training Duplication Error', {
-        description: `There was an error duplicating the training: ${err.message}`,
+        description: `There was an error duplicating the training: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -94,28 +99,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       });
     }
   };
-
-  const ConfirmDeleteTraining = ({ onConfirm }: { onConfirm: () => void }) => (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button className='w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-100'>
-          Delete
-        </button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will delete the training permanently.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
 
   return (
     <div className='p-6'>
@@ -137,13 +120,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             },
             {
               label: 'Delete',
-              onClick: handleDeleteTraining,
+              onClick: (training: Training) => {
+                setDeleteTrainingId(training.id);
+              },
             },
             {
-              label: 'Delete',
+              label: 'Duplicate',
               onClick: (training: Training) => {
-                const confirmDelete = () => handleDeleteTraining(training);
-                return <ConfirmDeleteTraining onConfirm={confirmDelete} />;
+                handleDuplicateTraining(training);
               },
             },
             {
@@ -158,6 +142,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             },
           ]}
         />
+
+        {deleteTrainingId && (
+          <AlertDialog open={!!deleteTrainingId} onOpenChange={(open) => {
+            if (!open) setDeleteTrainingId(null);
+          }}>
+          <AlertDialogContent className="bg-white">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will delete the training permanently.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteTrainingId(null)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={() => handleDeleteTraining(deleteTrainingId)}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        )}
       </AdminLayout>
     </div>
   );

@@ -69,6 +69,7 @@ export const trainingTypes = gql`
       instructorId: String
       isHidden: Boolean
       isPublic: Boolean
+      imageSrc: String
     ): Training
 
     deleteTraining(id: String!): Training

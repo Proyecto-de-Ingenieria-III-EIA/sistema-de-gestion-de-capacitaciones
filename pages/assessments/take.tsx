@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 export default function TakeAssessment() {
   const router = useRouter();
-  const { id: assessmentId } = router.query;
+  const { id: assessmentId, trainingId } = router.query;
   const { data: session } = useSession();
   const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
 
@@ -100,7 +100,7 @@ export default function TakeAssessment() {
           onClick: () => toast.dismiss(),
         },
       });
-      router.push('/');
+      router.push(`/trainings/user?id=${trainingId}`);
     } catch (err) {
       console.error('Error submitting assessment:', err);
       toast('Assessment Submission Failed', {

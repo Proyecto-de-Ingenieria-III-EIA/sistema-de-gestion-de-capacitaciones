@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import React from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_TRAINING_BY_ID } from '@/graphql/frontend/trainings';
 import TrainingMaterialsTable from '@/components/atomic-design/molecules/training-materials-table';
@@ -27,7 +28,7 @@ export default function TrainingDetailsForUser() {
     skip: !id,
   });
 
-  const { data: participantProgress } = useQuery(
+  const { data: participantProgress, refetch: refetchProgress } = useQuery(
     GET_ASSESSMENT_PROGRESS_BY_TRAINING,
     {
       variables: {
@@ -107,6 +108,7 @@ export default function TrainingDetailsForUser() {
           <AssessmentsTable
             trainingId={id as string}
             canModifyAssessment={false}
+            refetchProgress={refetchProgress}
           />
         </div>
       </div>

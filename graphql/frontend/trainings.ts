@@ -122,6 +122,7 @@ export const UPDATE_TRAINING = gql`
     $instructorId: String
     $isHidden: Boolean
     $isPublic: Boolean
+    $imageSrc: String
   ) {
     updateTraining(
       id: $id
@@ -130,6 +131,7 @@ export const UPDATE_TRAINING = gql`
       instructorId: $instructorId
       isHidden: $isHidden
       isPublic: $isPublic
+      imageSrc: $imageSrc
     ) {
       id
       title
@@ -140,6 +142,7 @@ export const UPDATE_TRAINING = gql`
       }
       isHidden
       isPublic
+      imageSrc
     }
   }
 `;

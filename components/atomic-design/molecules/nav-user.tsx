@@ -4,6 +4,7 @@ import { useSidebar } from "@/components/ui/sidebar"
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import router from "next/router"
 
 export function NavUser () {
 
@@ -52,7 +53,7 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push(`/profile/user?id=${session?.user?.id}`)}>
                     <Sparkles />
                     Profile
                   </DropdownMenuItem>

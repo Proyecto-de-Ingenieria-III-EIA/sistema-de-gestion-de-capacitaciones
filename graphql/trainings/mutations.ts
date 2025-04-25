@@ -87,6 +87,7 @@ export const mutations = {
       description?: string;
       isHidden?: boolean;
       isPublic?: boolean;
+      imageSrc?: string;
       instructorId?: string;
     },
     { db, authData }: Context
@@ -108,6 +109,7 @@ export const mutations = {
         description: args.description ?? existingTraining.description,
         isHidden: args.isHidden ?? existingTraining.isHidden,
         isPublic: args.isPublic ?? existingTraining.isPublic,
+        imageSrc: args.imageSrc ?? existingTraining.imageSrc,
         instructorId: args.instructorId ?? existingTraining.instructorId,
       },
       include: { instructor: true },

@@ -3,11 +3,12 @@ import EnrollmentsTable from '@/components/atomic-design/molecules/enrollments-t
 import TrainingMaterialsTable from '@/components/atomic-design/molecules/training-materials-table';
 import AdminLayout from '@/components/layouts/admin-layout';
 import EditForm, { FieldConfig } from '@/components/templates/Edit';
-import { UPDATE_TRAINING } from '@/graphql/frontend/trainings';
+import { GET_TRAININGS, UPDATE_TRAINING } from '@/graphql/frontend/trainings';
 import { GET_INSTRUCTORS } from '@/graphql/frontend/users';
 import { TrainingWithInstructor } from '@/types/training-instructor';
 import { useMutation, useQuery } from '@apollo/client';
 import { useSession } from 'next-auth/react';
+import router from 'next/router';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import * as z from 'zod';
@@ -33,7 +34,14 @@ export default function EditTraining() {
         'session-token': session?.sessionToken,
       },
     },
-    refetchQueries: ['GetTrainings'],
+    refetchQueries: [{
+      query: GET_TRAININGS,
+      context: {
+        headers: {
+          'session-token': session?.sessionToken,
+        },
+      },
+    }],
   });
 
   const [trainingData, setTrainingData] =
@@ -111,6 +119,14 @@ export default function EditTraining() {
       type: 'checkbox',
       validation: z.boolean(),
     },
+    {
+      name: 'imageSrc',
+      label: 'Image URL',
+      placeholder: 'The URL of the training image',
+      description: 'The URL of the training image.',
+      type: 'text',
+      validation: z.string().url({ message: 'Please enter a valid URL.' })
+    }
   ];
 
   async function handleSubmit(values: Record<string, any>) {
@@ -123,6 +139,7 @@ export default function EditTraining() {
           instructorId: values.instructorId,
           isHidden: values.isHidden,
           isPublic: values.isPublic,
+          imageSrc: values.imageSrc,
         },
       });
       setTrainingData(data.updateTraining);
@@ -137,6 +154,7 @@ export default function EditTraining() {
           onClick: () => toast.dismiss(),
         },
       });
+      router.push('/admin-dashboard');
     } catch (err) {
       console.error('Error updating training:', err);
       toast('Training Failed Update', {
@@ -160,6 +178,7 @@ export default function EditTraining() {
         initialData={{
           ...trainingData,
           instructorId: trainingData.instructor?.id || '',
+          imageSrc: trainingData.imageSrc || '',
         }}
       />
 

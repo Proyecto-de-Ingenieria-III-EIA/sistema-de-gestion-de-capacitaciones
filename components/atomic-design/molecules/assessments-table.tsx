@@ -30,12 +30,14 @@ interface AssessmentsTableProps {
   trainingId: string;
   renderAction?: (assessment: Assessment) => React.ReactNode;
   canModifyAssessment: boolean;
+  refetchProgress?: () => void;
 }
 
 export default function AssessmentsTable({
   trainingId,
   renderAction,
   canModifyAssessment,
+  refetchProgress
 }: AssessmentsTableProps) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -50,10 +52,28 @@ export default function AssessmentsTable({
     null
   );
   const questionsSectionRef = useRef<HTMLDivElement | null>(null);
+  const [firstQuestion, setFirstQuestion] = useState('');
+  const [firstOptions, setFirstOptions] = useState<string[]>([]);
+  const [firstAnswer, setFirstAnswer] = useState('');
 
   const handleTakeAssessment = (assessmentId: string) => {
-    const assessmentUrl = `/assessments/take?id=${assessmentId}`;
+    const assessmentUrl = `/assessments/take?id=${assessmentId}&trainingId=${trainingId}`;
     window.open(assessmentUrl, '_blank');
+
+    setTimeout(() => {
+      refetchResults();
+      if(refetchProgress){
+        refetchProgress();
+      }
+      
+      toast('Results Updated', {
+        description: 'Your assessment results have been updated.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }, 5000);
   };
 
   const handleOpenQuestions = (assessmentId: string) => {
@@ -76,7 +96,7 @@ export default function AssessmentsTable({
     },
   });
 
-  const { data: resultsData } = useQuery(GET_ASSESSMENT_RESULTS_BY_USER, {
+  const { data: resultsData, refetch: refetchResults } = useQuery(GET_ASSESSMENT_RESULTS_BY_USER, {
     variables: {
       userId: session?.user?.id,
       trainingId: trainingId,
@@ -90,7 +110,6 @@ export default function AssessmentsTable({
   });
 
   const [createAssessment] = useMutation(CREATE_ASSESSMENT, {
-    refetchQueries: ['GetAssessments'],
     context: {
       headers: {
         'session-token': session?.sessionToken,
@@ -108,7 +127,6 @@ export default function AssessmentsTable({
   });
 
   const [addQuestion] = useMutation(ADD_QUESTION, {
-    refetchQueries: ['GetAssessments'],
     context: {
       headers: {
         'session-token': session?.sessionToken,
@@ -136,18 +154,82 @@ export default function AssessmentsTable({
 
   const handleAddAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await createAssessment({ variables: { trainingId, title } });
-      toast('Assessment Created Successfully', {
-        description: `The assessment "${title}" has been created successfully.`,
+  
+    if (title.trim().length < 3) {
+      return toast('Error', {
+        description: 'The assessment name must be at least 3 characters long.',
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
         },
       });
+    }
+  
+    if (!firstQuestion.trim() || firstOptions.length < 2 || !firstAnswer.trim()) {
+      return toast('Error', {
+        description:
+          'The first question must have text, at least two options, and a correct answer.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+
+    if (!firstOptions.includes(firstAnswer)) {
+      return toast('Error', {
+        description: 'The answer must be one of the provided options.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+  
+    try {
+      const { data: assessmentData } = await createAssessment({
+        variables: { trainingId, title },
+        refetchQueries: [
+          {
+            query: GET_ASSESSMENTS,
+            variables: { trainingId },
+          },
+        ]
+      });
+  
+      const newAssessmentId = assessmentData.createAssessment.id;
+  
+      await addQuestion({
+        variables: {
+          assessmentId: newAssessmentId,
+          question: firstQuestion,
+          options: firstOptions,
+          answer: firstAnswer,
+        },
+        refetchQueries: [{ query: GET_ASSESSMENTS, variables: { trainingId } }],
+      });
+  
+      toast('Assessment Created Successfully', {
+        description: `The assessment "${title}" has been created with the first question.`,
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+  
       setTitle('');
+      setFirstQuestion('');
+      setFirstOptions([]);
+      setFirstAnswer('');
     } catch (err) {
-      console.error('Error creating assessment:', err);
+      console.error('Error creating assessment or adding question:', err);
+      toast('Error', {
+        description: 'There was an error creating the assessment. Please try again.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
     }
   };
 
@@ -185,6 +267,26 @@ export default function AssessmentsTable({
       });
     }
 
+    if (!question.trim() || options.length < 2 || !answer.trim()) {
+      return toast('Error', {
+        description: 'A question must have text, at least two options, and an answer.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+
+    if (!options.includes(answer)) {
+      return toast('Error', {
+        description: 'The answer must be one of the provided options.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+
     try {
       if (editingQuestionId) {
         await editQuestion({
@@ -211,6 +313,12 @@ export default function AssessmentsTable({
             options,
             answer,
           },
+          refetchQueries: [
+            {
+              query: GET_ASSESSMENTS,
+              variables: { trainingId },
+            },
+          ],
         });
         toast('Question Added Successfully', {
           description: `The question has been added successfully.`,
@@ -235,22 +343,54 @@ export default function AssessmentsTable({
 
       {/* Add/Edit Assessment Form */}
       {canModifyAssessment && (
-        <form onSubmit={handleAddAssessment} className='mb-4'>
-          <div className='flex items-center gap-2'>
+        <form onSubmit={handleAddAssessment} className="mb-4">
+          <div className="flex items-center gap-2">
             <input
-              type='text'
+              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder='Assessment Title'
-              className='flex-1 border border-gray-300 rounded-lg p-2'
+              placeholder="Assessment Title"
+              className="flex-1 border border-gray-300 rounded-lg p-2"
             />
-            <button
-              type='submit'
-              className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700'
-            >
-              Add Assessment
-            </button>
           </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium">First Question:</label>
+            <input
+              type="text"
+              value={firstQuestion}
+              onChange={(e) => setFirstQuestion(e.target.value)}
+              placeholder="Enter the first question"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+            />
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium">
+              Options (comma-separated):
+            </label>
+            <input
+              type="text"
+              value={firstOptions.join(',')}
+              onChange={(e) => setFirstOptions(e.target.value.split(','))}
+              placeholder="Enter options"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+            />
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium">Correct Answer:</label>
+            <input
+              type="text"
+              value={firstAnswer}
+              onChange={(e) => setFirstAnswer(e.target.value)}
+              placeholder="Enter the correct answer"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mt-4"
+          >
+            Add Assessment
+          </button>
         </form>
       )}
 

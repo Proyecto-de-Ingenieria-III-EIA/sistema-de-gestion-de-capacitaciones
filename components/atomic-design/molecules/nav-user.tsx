@@ -3,7 +3,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { useSidebar } from "@/components/ui/sidebar"
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
+import { signIn, signOut, useSession } from "next-auth/react"
 import router from "next/router"
 
 export function NavUser () {
@@ -82,8 +82,8 @@ export function NavUser () {
                     onClick={async () => {
                     localStorage.clear(); 
                     sessionStorage.clear();
-                    await signOut({ redirect: false });
-                    window.location.href = "/";
+                    await signOut({ redirect: true });
+                    signIn('auth0')
                     }}
                     >
                   <LogOut />

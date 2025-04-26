@@ -17,7 +17,7 @@ export const queries = {
     args: { id: string },
     { db, authData }: Context
   ) => {
-    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+    await validateAuth(authData);
 
     return db.user.findUnique({
       where: { id: args.id },

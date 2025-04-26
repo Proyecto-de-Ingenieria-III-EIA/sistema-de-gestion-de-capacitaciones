@@ -17,6 +17,26 @@ export const mutations = {
     });
   },
 
+  editAssessment: async (
+    _: unknown,
+    args: { assessmentId: string; title?: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
+    const existingAssessment = await db.assessment.findUnique({
+      where: { id: args.assessmentId },
+    });
+    if (!existingAssessment) {
+      throw new Error('Assessment not found');
+    }
+    return db.assessment.update({
+      where: { id: args.assessmentId },
+      data: {
+        title: args.title ?? existingAssessment.title,
+      },
+    });
+  },
+
   deleteAssessment: async (
     _: unknown,
     args: { assessmentId: string },

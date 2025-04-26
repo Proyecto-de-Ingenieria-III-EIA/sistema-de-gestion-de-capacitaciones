@@ -8,6 +8,7 @@ import {
   DELETE_QUESTION,
   DELETE_ASSESSMENT,
   GET_ASSESSMENT_RESULTS_BY_USER,
+  EDIT_ASSESSMENT,
 } from '@/graphql/frontend/assessments';
 import { useSession } from 'next-auth/react';
 import { Assessment } from '@prisma/client';
@@ -55,6 +56,8 @@ export default function AssessmentsTable({
   const [firstQuestion, setFirstQuestion] = useState('');
   const [firstOptions, setFirstOptions] = useState<string[]>([]);
   const [firstAnswer, setFirstAnswer] = useState('');
+  const [editingAssessmentId, setEditingAssessmentId] = useState<string | null>(null);
+  const [newAssessmentTitle, setNewAssessmentTitle] = useState('');
 
   const handleTakeAssessment = (assessmentId: string) => {
     const assessmentUrl = `/assessments/take?id=${assessmentId}&trainingId=${trainingId}`;
@@ -110,6 +113,15 @@ export default function AssessmentsTable({
   });
 
   const [createAssessment] = useMutation(CREATE_ASSESSMENT, {
+    context: {
+      headers: {
+        'session-token': session?.sessionToken,
+      },
+    },
+  });
+
+  const [editAssessment] = useMutation(EDIT_ASSESSMENT, {
+    refetchQueries: [{ query: GET_ASSESSMENTS}],
     context: {
       headers: {
         'session-token': session?.sessionToken,
@@ -225,6 +237,49 @@ export default function AssessmentsTable({
       console.error('Error creating assessment or adding question:', err);
       toast('Error', {
         description: 'There was an error creating the assessment. Please try again.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+  };
+
+  const handleEditAssessment = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (newAssessmentTitle.trim().length < 3) {
+      return toast('Error', {
+        description: 'The assessment name must be at least 3 characters long.',
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+    }
+  
+    try {
+      await editAssessment({
+        variables: {
+          assessmentId: editingAssessmentId,
+          title: newAssessmentTitle,
+        },
+      });
+  
+      toast('Assessment Updated Successfully', {
+        description: `The assessment name has been updated to "${newAssessmentTitle}".`,
+        action: {
+          label: 'Dismiss',
+          onClick: () => toast.dismiss(),
+        },
+      });
+  
+      setEditingAssessmentId(null);
+      setNewAssessmentTitle('');
+    } catch (err) {
+      console.error('Error updating assessment:', err);
+      toast('Error', {
+        description: 'There was an error updating the assessment. Please try again.',
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -412,16 +467,58 @@ export default function AssessmentsTable({
                 className='border border-gray-300 rounded-lg p-4 shadow-sm flex-col items-center text-center'
               >
                 <div className='flex justify-between items-center'>
-                  <h3 className='text-lg font-semibold'>{assessment.title}</h3>
-
-                  {canModifyAssessment && (
+                {/* Inline Edit Form for Assessment Title */}
+                {editingAssessmentId === assessment.id ? (
+                  <form onSubmit={handleEditAssessment} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={newAssessmentTitle}
+                      onChange={(e) => setNewAssessmentTitle(e.target.value)}
+                      placeholder="Enter new title"
+                      className="border border-gray-300 rounded-lg p-2"
+                    />
                     <button
-                      onClick={() => handleOpenQuestions(assessment.id)}
-                      className='text-blue-500 hover:text-blue-700'
+                      type="submit"
+                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
                     >
-                      Manage Questions
+                      Save
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingAssessmentId(null);
+                        setNewAssessmentTitle('');
+                      }}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <h3 className='text-lg font-semibold'>{assessment.title}</h3>
+                    {canModifyAssessment && (
+                      <button
+                        onClick={() => {
+                          setEditingAssessmentId(assessment.id);
+                          setNewAssessmentTitle(assessment.title);
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {canModifyAssessment && (
+                  <button
+                    onClick={() => handleOpenQuestions(assessment.id)}
+                    className='text-blue-500 hover:text-blue-700'
+                  >
+                    Manage Questions
+                  </button>
+                )}
                   {canModifyAssessment && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>

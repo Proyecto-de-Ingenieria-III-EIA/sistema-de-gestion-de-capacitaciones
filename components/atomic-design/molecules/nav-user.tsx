@@ -1,15 +1,19 @@
+import client from "@/apollo-client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useSidebar } from "@/components/ui/sidebar"
+import { DELETE_SESSION } from "@/graphql/frontend/session"
+import { useMutation, useQuery } from "@apollo/client"
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import router from "next/router"
 
 export function NavUser () {
 
     const { data: session } = useSession()
     const { isMobile } = useSidebar()
+    const [deleteSession] = useMutation(DELETE_SESSION);
     return (
         
         <DropdownMenu>
@@ -80,20 +84,11 @@ export function NavUser () {
 
                 <DropdownMenuItem
                 onClick={async () => {
-                    try {
-                    const session = await fetch('/api/auth/session').then((res) => res.json());
-
-                    if (!session) {
-                        console.warn('No active session found. Redirecting to logout page.');
-                        router.push('/logout');
-                        return;
-                    }
-
-                    router.push('/logout');
-                    } catch (error) {
-                    console.error('Error during logout:', error);
-                    router.push('/logout');
-                    }
+                    localStorage.clear();
+                    signOut({
+                        callbackUrl: "/"
+                      });
+                    client.resetStore();
                 }}
                 >
                 <LogOut />

@@ -7,19 +7,33 @@ import { useSession } from "next-auth/react";
 import { Assessment } from "@prisma/client";
 import { useCallback } from "react";
 
-export default function TrainingDetails() {
+interface TrainingDetailsProps {
+  layout: string;
+}
+
+export default function TrainingDetails({layout}: TrainingDetailsProps) {
   const router = useRouter();
   const {data: session} = useSession();
   const { id } = router.query;
 
-  const handleMetrics = useCallback((assessmentId: string) => {
-    router.push(`/assessments/metrics?id=${assessmentId}`);
-  }, []);
+  const handleNavigation = (assessment: Assessment, path: string) => {
+    router.push({
+      pathname: path,
+      query: { 
+        id: assessment.id,
+        layout
+      }, 
+    });
+  };
+
+  const handleMetrics = useCallback((assessment: Assessment) => {
+      return handleNavigation(assessment, "/assessments/metrics");
+    }, [layout]);
 
   const renderAction = useCallback(
     (assessment: Assessment) => (
       <button
-        onClick={() => handleMetrics(assessment.id)}
+        onClick={() => handleMetrics(assessment)}
         className="text-green-500 hover:text-green-700"
       >
         Metrics

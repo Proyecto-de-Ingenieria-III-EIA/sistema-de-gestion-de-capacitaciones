@@ -59,6 +59,52 @@ export const GET_TRAININGS = gql`
   }
 `;
 
+export const GET_TRAININGS_BY_INSTRUCTOR = gql`
+  query GetTrainingsByInstructor($instructorId: String!) {
+    getTrainingsByInstructor(instructorId: $instructorId) {
+      id
+      title
+      description
+      isHidden
+      isPublic
+      imageSrc
+      createdAt
+      updatedAt
+      instructor {
+        id
+        name
+        email
+      }
+      materials {
+        id
+        fileType
+        fileUrl
+      }
+      assessments {
+        id
+        title
+        questions {
+          id
+          question
+          options
+          answer
+        }
+      }
+      enrollments {
+        id
+        status
+        progress
+        user {
+          id
+          name
+          email
+          area
+        }
+      }
+    }
+  }
+`;
+
 export const GET_TRAINING_BY_ID = gql`
   query GetTrainingById($trainingId: String!) {
     getTrainingById(trainingId: $trainingId) {

@@ -62,6 +62,32 @@ export const queries = {
     return training;
   },
 
+  getTrainingsByInstructor: async (
+    _: unknown,
+    args: { instructorId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['INSTRUCTOR']);
+    const trainings = await db.training.findMany({
+      where: { instructorId: args.instructorId },
+      include: {
+        instructor: true,
+        materials: true,
+        assessments: {
+          include: {
+            questions: true,
+          },
+        },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        }
+      },
+    });
+    return trainings;
+  },
+
   getTrainingsByUser: async (
     _: unknown,
     args: { userId: string },

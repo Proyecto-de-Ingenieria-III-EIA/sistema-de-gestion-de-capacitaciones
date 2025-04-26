@@ -75,6 +75,15 @@ export const CREATE_ASSESSMENT = gql`
   }
 `;
 
+export const EDIT_ASSESSMENT = gql`
+  mutation EditAssessment($assessmentId: String!, $title: String!) {
+    editAssessment(assessmentId: $assessmentId, title: $title) {
+      id
+      title
+    }
+  }
+`;
+
 export const DELETE_ASSESSMENT = gql`
   mutation DeleteAssessment($assessmentId: String!) {
     deleteAssessment(assessmentId: $assessmentId) {

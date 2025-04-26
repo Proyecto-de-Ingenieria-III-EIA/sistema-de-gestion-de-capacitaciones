@@ -100,6 +100,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+    const handleNavigation = (training: Training, path: string, Layout: React.FC<{ children: React.ReactNode }>) => {
+      localStorage.setItem("selectedTraining", JSON.stringify(training));
+      router.push({
+        pathname: path,
+        query: { 
+          id: training.id,
+          layout: Layout.name 
+        }, 
+      });
+    };
+
   return (
     <div className='p-6'>
       {/* Header */}
@@ -111,11 +122,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {
               label: 'Edit',
               onClick: (training: Training) => {
-                localStorage.setItem(
-                  'selectedTraining',
-                  JSON.stringify(training)
-                );
-                router.push(`/trainings/edit?id=${training.id}`);
+                handleNavigation(training, "/trainings/edit", AdminLayout)
               },
             },
             {
@@ -133,11 +140,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {
               label: 'View',
               onClick: (training: Training) => {
-                localStorage.setItem(
-                  'selectedTraining',
-                  JSON.stringify(training)
-                );
-                router.push(`/trainings/details?id=${training.id}`);
+                handleNavigation(training, "/trainings/details", AdminLayout)
               },
             },
           ]}

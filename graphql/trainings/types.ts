@@ -36,6 +36,7 @@ export const trainingTypes = gql`
     getTrainings: [Training]
     getTrainingById(trainingId: String!): Training
     getTrainingsByUser(userId: String!): [Training]
+    getTrainingsByInstructor(instructorId: String!): [Training]
   }
 
   ## Mutations

@@ -100,7 +100,9 @@ export default function TakeAssessment() {
           onClick: () => toast.dismiss(),
         },
       });
-      router.push(`/trainings/user?id=${trainingId}`);
+      setTimeout(() => {
+        window.close();
+      }, 3000);
     } catch (err) {
       console.error('Error submitting assessment:', err);
       toast('Assessment Submission Failed', {

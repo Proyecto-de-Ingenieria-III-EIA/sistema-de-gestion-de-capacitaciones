@@ -2,7 +2,8 @@ import AssessmentsTable from '@/components/atomic-design/molecules/assessments-t
 import EnrollmentsTable from '@/components/atomic-design/molecules/enrollments-table';
 import TrainingMaterialsTable from '@/components/atomic-design/molecules/training-materials-table';
 import AdminLayout from '@/components/layouts/admin-layout';
-import EditForm, { FieldConfig } from '@/components/templates/Edit';
+import MainLayout from '@/components/layouts/main-layout';
+import EditForm, { FieldConfig } from '@/components/templatesa/Edit';
 import { GET_TRAININGS, UPDATE_TRAINING } from '@/graphql/frontend/trainings';
 import { GET_INSTRUCTORS } from '@/graphql/frontend/users';
 import { TrainingWithInstructor } from '@/types/training-instructor';
@@ -13,8 +14,17 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
+const layouts = {
+  MainLayout,
+  AdminLayout,
+};
+
 export default function EditTraining() {
   const { data: session } = useSession();
+
+  const {id, layout} = router.query;
+
+  const Layout = layouts[layout as keyof typeof layouts] || MainLayout;
 
   const {
     data: instructorData,
@@ -154,7 +164,12 @@ export default function EditTraining() {
           onClick: () => toast.dismiss(),
         },
       });
-      router.push('/admin-dashboard');
+      
+      if (layout === 'MainLayout') {
+      router.push('/');
+      } else {
+        router.push('/admin-dashboard');
+      }
     } catch (err) {
       console.error('Error updating training:', err);
       toast('Training Failed Update', {
@@ -168,7 +183,7 @@ export default function EditTraining() {
   }
 
   return (
-    <AdminLayout>
+    <Layout>
       <EditForm
         title='Edit Training'
         description='Update the details of the training.'
@@ -195,6 +210,6 @@ export default function EditTraining() {
         trainingId={trainingData.id}
         canModifyAssessment={true}
       />
-    </AdminLayout>
+    </Layout>
   );
 }

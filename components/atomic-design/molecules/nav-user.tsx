@@ -79,15 +79,25 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem
-                    onClick={async () => {
-                    localStorage.clear(); 
-                    sessionStorage.clear();
-                    await signOut({ redirect: true });
-                    signIn('auth0')
-                    }}
-                    >
-                  <LogOut />
-                  Log out
+                onClick={async () => {
+                    try {
+                    const session = await fetch('/api/auth/session').then((res) => res.json());
+
+                    if (!session) {
+                        console.warn('No active session found. Redirecting to logout page.');
+                        router.push('/logout');
+                        return;
+                    }
+
+                    router.push('/logout');
+                    } catch (error) {
+                    console.error('Error during logout:', error);
+                    router.push('/logout');
+                    }
+                }}
+                >
+                <LogOut />
+                Log out
                 </DropdownMenuItem>
 
             </DropdownMenuContent>

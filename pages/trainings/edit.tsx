@@ -157,7 +157,7 @@ export default function EditTraining() {
         'selectedTraining',
         JSON.stringify(data.updateTraining)
       );
-      toast('Training Update Success', {
+      toast.success('Training Update Success', {
         description: 'The training has been updated successfully.',
         action: {
           label: 'Dismiss',
@@ -172,7 +172,7 @@ export default function EditTraining() {
       }
     } catch (err) {
       console.error('Error updating training:', err);
-      toast('Training Failed Update', {
+      toast.error('Training Failed Update', {
         description: 'Update failed. Please try again.',
         action: {
           label: 'Dismiss',

@@ -65,11 +65,11 @@ export default function AssessmentsTable({
 
     setTimeout(() => {
       refetchResults();
-      if(refetchProgress){
+      if (refetchProgress) {
         refetchProgress();
       }
-      
-      toast('Results Updated', {
+
+      toast.info('Results Updated', {
         description: 'Your assessment results have been updated.',
         action: {
           label: 'Dismiss',
@@ -121,7 +121,7 @@ export default function AssessmentsTable({
   });
 
   const [editAssessment] = useMutation(EDIT_ASSESSMENT, {
-    refetchQueries: [{ query: GET_ASSESSMENTS}],
+    refetchQueries: [{ query: GET_ASSESSMENTS }],
     context: {
       headers: {
         'session-token': session?.sessionToken,
@@ -166,9 +166,9 @@ export default function AssessmentsTable({
 
   const handleAddAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (title.trim().length < 3) {
-      return toast('Error', {
+      return toast.error('Error', {
         description: 'The assessment name must be at least 3 characters long.',
         action: {
           label: 'Dismiss',
@@ -176,9 +176,9 @@ export default function AssessmentsTable({
         },
       });
     }
-  
+
     if (!firstQuestion.trim() || firstOptions.length < 2 || !firstAnswer.trim()) {
-      return toast('Error', {
+      return toast.error('Error', {
         description:
           'The first question must have text, at least two options, and a correct answer.',
         action: {
@@ -189,7 +189,7 @@ export default function AssessmentsTable({
     }
 
     if (!firstOptions.includes(firstAnswer)) {
-      return toast('Error', {
+      return toast.error('Error', {
         description: 'The answer must be one of the provided options.',
         action: {
           label: 'Dismiss',
@@ -197,7 +197,7 @@ export default function AssessmentsTable({
         },
       });
     }
-  
+
     try {
       const { data: assessmentData } = await createAssessment({
         variables: { trainingId, title },
@@ -208,9 +208,9 @@ export default function AssessmentsTable({
           },
         ]
       });
-  
+
       const newAssessmentId = assessmentData.createAssessment.id;
-  
+
       await addQuestion({
         variables: {
           assessmentId: newAssessmentId,
@@ -220,22 +220,22 @@ export default function AssessmentsTable({
         },
         refetchQueries: [{ query: GET_ASSESSMENTS, variables: { trainingId } }],
       });
-  
-      toast('Assessment Created Successfully', {
+
+      toast.success('Assessment Created Successfully', {
         description: `The assessment "${title}" has been created with the first question.`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
         },
       });
-  
+
       setTitle('');
       setFirstQuestion('');
       setFirstOptions([]);
       setFirstAnswer('');
     } catch (err) {
       console.error('Error creating assessment or adding question:', err);
-      toast('Error', {
+      toast.error('Error', {
         description: 'There was an error creating the assessment. Please try again.',
         action: {
           label: 'Dismiss',
@@ -247,9 +247,9 @@ export default function AssessmentsTable({
 
   const handleEditAssessment = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (newAssessmentTitle.trim().length < 3) {
-      return toast('Error', {
+      return toast.error('Error', {
         description: 'The assessment name must be at least 3 characters long.',
         action: {
           label: 'Dismiss',
@@ -257,7 +257,7 @@ export default function AssessmentsTable({
         },
       });
     }
-  
+
     try {
       await editAssessment({
         variables: {
@@ -265,20 +265,20 @@ export default function AssessmentsTable({
           title: newAssessmentTitle,
         },
       });
-  
-      toast('Assessment Updated Successfully', {
+
+      toast.success('Assessment Updated Successfully', {
         description: `The assessment name has been updated to "${newAssessmentTitle}".`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
         },
       });
-  
+
       setEditingAssessmentId(null);
       setNewAssessmentTitle('');
     } catch (err) {
       console.error('Error updating assessment:', err);
-      toast('Error', {
+      toast.error('Error', {
         description: 'There was an error updating the assessment. Please try again.',
         action: {
           label: 'Dismiss',
@@ -291,7 +291,7 @@ export default function AssessmentsTable({
   const handleDeleteAssessment = async (assessmentId: string) => {
     try {
       await deleteAssessment({ variables: { assessmentId: assessmentId } });
-      toast('Assessment Deletion Success', {
+      toast.success('Assessment Deletion Success', {
         description: `The assessment has been deleted successfully.`,
         action: {
           label: 'Dismiss',
@@ -300,7 +300,7 @@ export default function AssessmentsTable({
       });
     } catch (err) {
       console.error('Error deleting assessment:', err);
-      toast('Error Deleting Assessment', {
+      toast.error('Error Deleting Assessment', {
         description: `The assessment could not be deleted. Please try again.`,
         action: {
           label: 'Dismiss',
@@ -313,7 +313,7 @@ export default function AssessmentsTable({
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAssessmentId) {
-      return toast('No Assessment Selected', {
+      return toast.info('No Assessment Selected', {
         description: `Please select an assessment to add a question.`,
         action: {
           label: 'Dismiss',
@@ -323,7 +323,7 @@ export default function AssessmentsTable({
     }
 
     if (!question.trim() || options.length < 2 || !answer.trim()) {
-      return toast('Error', {
+      return toast.error('Error', {
         description: 'A question must have text, at least two options, and an answer.',
         action: {
           label: 'Dismiss',
@@ -333,7 +333,7 @@ export default function AssessmentsTable({
     }
 
     if (!options.includes(answer)) {
-      return toast('Error', {
+      return toast.error('Error', {
         description: 'The answer must be one of the provided options.',
         action: {
           label: 'Dismiss',
@@ -352,7 +352,7 @@ export default function AssessmentsTable({
             answer,
           },
         });
-        toast('Question Modified Successfully', {
+        toast.success('Question Modified Successfully', {
           description: `The question has been modified successfully.`,
           action: {
             label: 'Dismiss',
@@ -375,7 +375,7 @@ export default function AssessmentsTable({
             },
           ],
         });
-        toast('Question Added Successfully', {
+        toast.success('Question Added Successfully', {
           description: `The question has been added successfully.`,
           action: {
             label: 'Dismiss',
@@ -467,58 +467,58 @@ export default function AssessmentsTable({
                 className='border border-gray-300 rounded-lg p-4 shadow-sm flex-col items-center text-center'
               >
                 <div className='flex justify-between items-center'>
-                {/* Inline Edit Form for Assessment Title */}
-                {editingAssessmentId === assessment.id ? (
-                  <form onSubmit={handleEditAssessment} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newAssessmentTitle}
-                      onChange={(e) => setNewAssessmentTitle(e.target.value)}
-                      placeholder="Enter new title"
-                      className="border border-gray-300 rounded-lg p-2"
-                    />
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingAssessmentId(null);
-                        setNewAssessmentTitle('');
-                      }}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                    >
-                      Cancel
-                    </button>
-                  </form>
-                ) : (
-                  <>
-                    <h3 className='text-lg font-semibold'>{assessment.title}</h3>
-                    {canModifyAssessment && (
+                  {/* Inline Edit Form for Assessment Title */}
+                  {editingAssessmentId === assessment.id ? (
+                    <form onSubmit={handleEditAssessment} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newAssessmentTitle}
+                        onChange={(e) => setNewAssessmentTitle(e.target.value)}
+                        placeholder="Enter new title"
+                        className="border border-gray-300 rounded-lg p-2"
+                      />
                       <button
-                        onClick={() => {
-                          setEditingAssessmentId(assessment.id);
-                          setNewAssessmentTitle(assessment.title);
-                        }}
-                        className="text-blue-500 hover:text-blue-700"
+                        type="submit"
+                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
                       >
-                        Edit
+                        Save
                       </button>
-                    )}
-                  </>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingAssessmentId(null);
+                          setNewAssessmentTitle('');
+                        }}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <>
+                      <h3 className='text-lg font-semibold'>{assessment.title}</h3>
+                      {canModifyAssessment && (
+                        <button
+                          onClick={() => {
+                            setEditingAssessmentId(assessment.id);
+                            setNewAssessmentTitle(assessment.title);
+                          }}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </>
+                  )}
 
-                {canModifyAssessment && (
-                  <button
-                    onClick={() => handleOpenQuestions(assessment.id)}
-                    className='text-blue-500 hover:text-blue-700'
-                  >
-                    Manage Questions
-                  </button>
-                )}
+                  {canModifyAssessment && (
+                    <button
+                      onClick={() => handleOpenQuestions(assessment.id)}
+                      className='text-blue-500 hover:text-blue-700'
+                    >
+                      Manage Questions
+                    </button>
+                  )}
                   {canModifyAssessment && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -686,11 +686,10 @@ export default function AssessmentsTable({
                       </div>
                       <button
                         type='submit'
-                        className={`px-4 py-2 ${
-                          editingQuestionId
+                        className={`px-4 py-2 ${editingQuestionId
                             ? 'bg-yellow-500 hover:bg-yellow-700'
                             : 'bg-green-500 hover:bg-green-700'
-                        } text-white rounded`}
+                          } text-white rounded`}
                       >
                         {editingQuestionId ? 'Edit Question' : 'Add Question'}
                       </button>

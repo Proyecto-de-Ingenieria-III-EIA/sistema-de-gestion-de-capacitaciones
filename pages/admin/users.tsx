@@ -63,7 +63,7 @@ export default function AdminUsers() {
 
       setIsEditing(false);
       setEditableUsers([]);
-      toast('Changes Saved', {
+      toast.success('Changes Saved', {
         description: `Your changes have been saved successfully.`,
         action: {
           label: 'Dismiss',
@@ -72,7 +72,7 @@ export default function AdminUsers() {
       });
     } catch (error) {
       console.error('Error saving changes:', error);
-      toast('Changes Not Saved', {
+      toast.error('Changes Not Saved', {
         description: `There was an error saving your changes. Please try again.`,
         action: {
           label: 'Dismiss',
@@ -85,7 +85,7 @@ export default function AdminUsers() {
   const handleCancel = () => {
     setIsEditing(false);
     setEditableUsers([]);
-    toast('Changes canceled', {
+    toast.info('Changes canceled', {
       description: `The changes you made have been discarded.`,
       action: {
         label: 'Dismiss',

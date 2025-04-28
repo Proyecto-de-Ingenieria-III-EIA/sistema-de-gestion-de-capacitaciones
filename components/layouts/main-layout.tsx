@@ -18,10 +18,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       href: "/forum", 
     },
     {
-      label: "Progress",
-      href: "/progress",
-    },
-    {
       label: "Home page",
       href: "/",
     }

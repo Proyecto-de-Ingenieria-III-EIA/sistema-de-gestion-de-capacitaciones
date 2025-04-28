@@ -54,7 +54,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteTraining = async (trainingId: string) => {
     try {
       await deleteTraining({ variables: { id: trainingId } });
-      toast('Training Deletion Success', {
+      toast.success('Training Deletion Success', {
         description: `The training has been deleted successfully.`,
         action: {
           label: 'Dismiss',
@@ -64,7 +64,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       setDeleteTrainingId(null);
     } catch (err) {
       console.error('Error deleting training:', err);
-      toast('Training Deletion Error', {
+      toast.error('Training Deletion Error', {
         description: `There was an error deleting the training: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`,
@@ -79,7 +79,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDuplicateTraining = async (training: Training) => {
     try {
       await duplicateTraining({ variables: { trainingId: training.id } });
-      toast('Training Duplication Successful', {
+      toast.success('Training Duplication Successful', {
         description: `The training has been duplicated successfully.`,
         action: {
           label: 'Dismiss',
@@ -88,7 +88,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       });
     } catch (err) {
       console.error('Error duplicating training:', err);
-      toast('Training Duplication Error', {
+      toast.error('Training Duplication Error', {
         description: `There was an error duplicating the training: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`,

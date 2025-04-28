@@ -83,7 +83,7 @@ export default function EnrollmentsTable({
       });
       setShowAddParticipant(false);
       setSelectedUser(null);
-      toast('Participant Added', {
+      toast.success('Participant Added', {
         description: `The participant has been added successfully.`,
         action: {
           label: 'Dismiss',
@@ -92,10 +92,9 @@ export default function EnrollmentsTable({
       });
     } catch (err) {
       console.error('Error adding participant:', err);
-      toast('Error Adding Participant', {
-        description: `There was an error adding the participant: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`,
+      toast.error('Error Adding Participant', {
+        description: `There was an error adding the participant: ${err instanceof Error ? err.message : 'Unknown error'
+          }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),
@@ -116,7 +115,7 @@ export default function EnrollmentsTable({
   const handleDeleteParticipant = async (enrollmentId: string) => {
     try {
       await deleteEnrollment({ variables: { id: enrollmentId } });
-      toast('Participant Removed Successfully', {
+      toast.success('Participant Removed Successfully', {
         description: `The participant has been removed successfully.`,
         action: {
           label: 'Dismiss',
@@ -125,10 +124,9 @@ export default function EnrollmentsTable({
       });
     } catch (err) {
       console.error('Error removing participant:', err);
-      toast('Participant Deletion Error', {
-        description: `There was an error removing the participant: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`,
+      toast.error('Participant Deletion Error', {
+        description: `There was an error removing the participant: ${err instanceof Error ? err.message : 'Unknown error'
+          }`,
         action: {
           label: 'Dismiss',
           onClick: () => toast.dismiss(),

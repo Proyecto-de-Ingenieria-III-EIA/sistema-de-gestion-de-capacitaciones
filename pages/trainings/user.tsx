@@ -51,7 +51,7 @@ export default function TrainingDetailsForUser() {
       const certificateUrl = `/trainings/certificate?id=${id}&trainingName=${trainingName}&userName=${userName}`;
       window.open(certificateUrl, '_blank');
     } else {
-      toast("Training Incomplete", {
+      toast.info("Training Incomplete", {
         description: "You must complete the training before you can access the certificate.",
         action: {
           label: "Dismiss",

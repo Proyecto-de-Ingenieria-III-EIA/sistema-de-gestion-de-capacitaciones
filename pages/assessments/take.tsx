@@ -93,7 +93,7 @@ export default function TakeAssessment() {
           ),
         },
       });
-      toast('Assessment Submition Successful', {
+      toast.success('Assessment Submition Successful', {
         description: `Your assessment was successfully submited. Your score was ${response.data.submitAssessmentResult.score}%`,
         action: {
           label: 'Dismiss',
@@ -105,7 +105,7 @@ export default function TakeAssessment() {
       }, 3000);
     } catch (err) {
       console.error('Error submitting assessment:', err);
-      toast('Assessment Submission Failed', {
+      toast.error('Assessment Submission Failed', {
         description: 'Submission failed. Please try again.',
         action: {
           label: 'Dismiss',

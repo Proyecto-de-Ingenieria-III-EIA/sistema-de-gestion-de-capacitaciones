@@ -56,7 +56,7 @@ export default function UserDetails() {
       const certificateUrl = `/trainings/certificate?id=${id}&trainingName=${trainingName}&userName=${userName}`;
       window.open(certificateUrl, '_blank');
     } else {
-      toast(
+      toast.info(
         'You must complete the training before you can access the certificate.'
       );
     }

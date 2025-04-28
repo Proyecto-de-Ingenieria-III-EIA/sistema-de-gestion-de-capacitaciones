@@ -80,7 +80,7 @@ export default function TrainingMaterialsTable({
 
   const handleAddMaterial = async () => {
     if (!fileType || !fileUrl) {
-      toast('Missing Fields', {
+      toast.error('Missing Fields', {
         description: `Please fill in all fields.`,
         action: {
           label: 'Dismiss',
@@ -101,7 +101,7 @@ export default function TrainingMaterialsTable({
       setShowAddMaterial(false);
       setFileType('');
       setFileUrl('');
-      toast('Training Material Added', {
+      toast.success('Training Material Added', {
         description: `The training material has been added successfully.`,
         action: {
           label: 'Dismiss',
@@ -110,7 +110,7 @@ export default function TrainingMaterialsTable({
       });
     } catch (err) {
       console.error('Error adding training material:', err);
-      toast('Training Material Addition Error', {
+      toast.error('Training Material Addition Error', {
         description: `There was an error adding the training material: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`,
@@ -127,7 +127,7 @@ export default function TrainingMaterialsTable({
       await deleteTrainingMaterial({
         variables: { id: materialId },
       });
-      toast('Training Material Deletion Success', {
+      toast.success('Training Material Deletion Success', {
         description: `The training material has been deleted successfully.`,
         action: {
           label: 'Dismiss',
@@ -136,7 +136,7 @@ export default function TrainingMaterialsTable({
       });
     } catch (err) {
       console.error('Error deleting training material:', err);
-      toast('Training Material Deletion Error', {
+      toast.error('Training Material Deletion Error', {
         description: `There was an error deleting the training material: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`,

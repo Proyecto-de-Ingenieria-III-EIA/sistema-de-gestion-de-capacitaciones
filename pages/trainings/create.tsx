@@ -1,4 +1,4 @@
-import CreateForm from "@/components/templatesa/Create";
+import CreateForm from "@/components/templates/Create";
 import * as z from "zod";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";

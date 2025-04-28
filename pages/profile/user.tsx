@@ -7,11 +7,19 @@ import { useQuery } from '@apollo/client';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import MainLayout from '@/components/layouts/main-layout';
+
+const layouts = {
+  AdminLayout,
+  MainLayout
+};
 
 export default function UserDetails() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, layout } = router.query;
   const { data: session } = useSession();
+
+  const Layout = layouts[layout as keyof typeof layouts] || MainLayout;
 
   const {
     data: userData,
@@ -63,7 +71,7 @@ export default function UserDetails() {
   const trainingProgress = progressData?.getUserProgressForTrainings || [];
 
   return (
-    <AdminLayout>
+    <Layout>
       <div className='max-w-4xl mx-auto mt-8 p-4'>
         <h1 className='text-2xl font-bold mb-6'>My Profile</h1>
         <div className='bg-white shadow-md rounded p-6'>
@@ -141,6 +149,6 @@ export default function UserDetails() {
           )}
         </div>
       </div>
-    </AdminLayout>
+    </Layout>
   );
 }

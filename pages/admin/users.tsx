@@ -6,6 +6,8 @@ import AdminLayout from '@/components/layouts/admin-layout';
 import { roleMapping } from '@/types/roles';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
+import { User } from '@prisma/client';
+import MainLayout from '@/components/layouts/main-layout';
 
 export default function AdminUsers() {
   const router = useRouter();
@@ -115,6 +117,16 @@ export default function AdminUsers() {
     );
   };
 
+  const handleNavigation = (user: User, path: string, Layout: React.FC<{ children: React.ReactNode }>) => {
+    router.push({
+      pathname: path,
+      query: { 
+        id: user.id,
+        layout: Layout.name 
+      }, 
+    });
+  };
+
   return (
     <AdminLayout>
       <div className='max-w-6xl mx-auto mt-8 p-4'>
@@ -197,7 +209,7 @@ export default function AdminUsers() {
                     <td className='px-4 py-2 border'>
                       <button
                         onClick={() =>
-                          router.push(`/profile/user?id=${user.id}`)
+                          handleNavigation(user, '/profile/user', AdminLayout)
                         }
                         className='px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2'
                       >

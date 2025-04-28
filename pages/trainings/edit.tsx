@@ -3,7 +3,7 @@ import EnrollmentsTable from '@/components/atomic-design/molecules/enrollments-t
 import TrainingMaterialsTable from '@/components/atomic-design/molecules/training-materials-table';
 import AdminLayout from '@/components/layouts/admin-layout';
 import MainLayout from '@/components/layouts/main-layout';
-import EditForm, { FieldConfig } from '@/components/templatesa/Edit';
+import EditForm, { FieldConfig } from '@/components/templates/Edit';
 import { GET_TRAININGS, UPDATE_TRAINING } from '@/graphql/frontend/trainings';
 import { GET_INSTRUCTORS } from '@/graphql/frontend/users';
 import { TrainingWithInstructor } from '@/types/training-instructor';
@@ -22,7 +22,7 @@ const layouts = {
 export default function EditTraining() {
   const { data: session } = useSession();
 
-  const {id, layout} = router.query;
+  const { id, layout } = router.query;
 
   const Layout = layouts[layout as keyof typeof layouts] || MainLayout;
 
@@ -164,9 +164,9 @@ export default function EditTraining() {
           onClick: () => toast.dismiss(),
         },
       });
-      
+
       if (layout === 'MainLayout') {
-      router.push('/');
+        router.push('/');
       } else {
         router.push('/admin-dashboard');
       }

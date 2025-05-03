@@ -4,8 +4,9 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_INSTRUCTORS } from "@/graphql/frontend/users";
-import { CREATE_TRAINING } from "@/graphql/frontend/trainings";
+import { CREATE_TRAINING, GET_TRAININGS } from "@/graphql/frontend/trainings";
 import AdminLayout from "@/components/layouts/admin-layout";
+import router from "next/router";
 
 export default function CreateTraining() {
   const { data: session } = useSession();
@@ -15,6 +16,14 @@ export default function CreateTraining() {
         "session-token": session?.sessionToken,
       },
     },
+    refetchQueries: [{
+      query: GET_TRAININGS,
+      context: {
+        headers: {
+          "session-token": session?.sessionToken,
+        },
+      },
+    }],
   });
 
   const { data, loading, error } = useQuery(GET_INSTRUCTORS, {
@@ -74,6 +83,7 @@ export default function CreateTraining() {
       if (data?.createTraining) {
         toast.success("Training created successfully!");
       }
+      router.push("/admin-dashboard");
     } catch (error) {
       console.error("Error creating training:", error);
       toast.error("Failed to create training. Please try again.");

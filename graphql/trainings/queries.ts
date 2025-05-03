@@ -4,35 +4,38 @@ import { validateRole } from '@/utils/validateRole';
 
 export const queries = {
   getTrainings: async (_: unknown, __: unknown, { db, authData }: Context) => {
+    await validateRole(db, authData, ['ADMIN']);
 
-    await validateRole( db, authData, ['ADMIN']);
-    
     return db.training.findMany({
       include: {
         instructor: true,
         materials: true,
-        assessments: {  
+        assessments: {
           include: {
             questions: true,
           },
         },
         enrollments: {
-          include:{
+          include: {
             user: true,
-          }
+          },
         },
         forumPosts: true,
-      }
+      },
     });
   },
 
-  getTrainingById: async (_: unknown, args: { trainingId: string }, { db, authData }: Context) => {
+  getTrainingById: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
     await validateAuth(authData);
-  
+
     if (!args.trainingId) {
-      throw new Error("Training ID is required.");
+      throw new Error('Training ID is required.');
     }
-  
+
     const training = await db.training.findUnique({
       where: { id: args.trainingId },
       include: {
@@ -51,15 +54,45 @@ export const queries = {
         forumPosts: true,
       },
     });
-  
+
     if (!training) {
-      throw new Error("Training not found.");
+      throw new Error('Training not found.');
     }
-  
+
     return training;
   },
 
-  getTrainingsByUser: async (_: unknown, args: { userId: string }, { db }: Context) => {
+  getTrainingsByInstructor: async (
+    _: unknown,
+    args: { instructorId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['INSTRUCTOR']);
+    const trainings = await db.training.findMany({
+      where: { instructorId: args.instructorId },
+      include: {
+        instructor: true,
+        materials: true,
+        assessments: {
+          include: {
+            questions: true,
+          },
+        },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        }
+      },
+    });
+    return trainings;
+  },
+
+  getTrainingsByUser: async (
+    _: unknown,
+    args: { userId: string },
+    { db }: Context
+  ) => {
     const enrollments = await db.enrollment.findMany({
       where: { userId: args.userId },
       include: { training: true },
@@ -77,7 +110,7 @@ export const queries = {
     validateAuth(authData);
     return db.trainingMaterial.findMany({
       where: { trainingId: args.trainingId },
-      include: {training: true},
+      include: { training: true },
     });
   },
 };

@@ -1,5 +1,6 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { signIn, useSession } from 'next-auth/react';
+import { Toaster } from '@/components/ui/sonner';
 
 const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
   const { status } = useSession();
@@ -16,6 +17,7 @@ const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <main className='flex-1 overflow-auto'>
         <div className='container'>{children}</div>
+        <Toaster />
       </main>
     </SidebarProvider>
   );

@@ -32,16 +32,17 @@ interface HeaderButton {
 
 interface HeaderProps {
   buttons: HeaderButton[];
+  firstLinkHref: string;
 }
 
-export default function Header({ buttons }: HeaderProps) {
+export default function Header({ buttons, firstLinkHref }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="bg-white">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <Link href="/">
+          <Link href={firstLinkHref}>
               <Image
                 src="https://1000marcas.net/wp-content/uploads/2023/11/Temu-Logo.png"
                 alt="Company Logo"

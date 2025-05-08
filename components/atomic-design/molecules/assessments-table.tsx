@@ -92,11 +92,6 @@ export default function AssessmentsTable({
 
   const { data } = useQuery(GET_ASSESSMENTS, {
     variables: { trainingId },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const { data: resultsData, refetch: refetchResults } = useQuery(GET_ASSESSMENT_RESULTS_BY_USER, {
@@ -104,64 +99,27 @@ export default function AssessmentsTable({
       userId: session?.user?.id,
       trainingId: trainingId,
     },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     skip: !trainingId || !session?.user?.id,
   });
 
-  const [createAssessment] = useMutation(CREATE_ASSESSMENT, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
-  });
+  const [createAssessment] = useMutation(CREATE_ASSESSMENT);
 
   const [editAssessment] = useMutation(EDIT_ASSESSMENT, {
     refetchQueries: [{ query: GET_ASSESSMENTS }],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const [deleteAssessment] = useMutation(DELETE_ASSESSMENT, {
     refetchQueries: ['GetAssessments'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
-  const [addQuestion] = useMutation(ADD_QUESTION, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
-  });
+  const [addQuestion] = useMutation(ADD_QUESTION);
 
   const [editQuestion] = useMutation(EDIT_QUESTION, {
     refetchQueries: ['GetAssessments'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const [deleteQuestion] = useMutation(DELETE_QUESTION, {
     refetchQueries: ['GetAssessments'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const handleAddAssessment = async (e: React.FormEvent) => {

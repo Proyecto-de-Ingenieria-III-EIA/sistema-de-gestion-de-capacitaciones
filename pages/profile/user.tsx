@@ -27,11 +27,6 @@ export default function UserDetails() {
     error: userError,
   } = useQuery(GET_USER_PROFILE, {
     variables: { id: id },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     skip: !id,
   });
 
@@ -41,11 +36,6 @@ export default function UserDetails() {
     error: progressError,
   } = useQuery(GET_PROGRESS_IN_TRAININGS, {
     variables: { userId: id },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     skip: !id,
   });
 

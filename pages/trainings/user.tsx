@@ -20,11 +20,6 @@ export default function TrainingDetailsForUser() {
 
   const { data, loading, error } = useQuery(GET_TRAINING_BY_ID, {
     variables: { trainingId: id },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     skip: !id,
   });
 
@@ -34,11 +29,6 @@ export default function TrainingDetailsForUser() {
       variables: {
         userId: session?.user?.id,
         trainingId: id,
-      },
-      context: {
-        headers: {
-          'session-token': session?.sessionToken,
-        },
       },
       skip: !id || !session?.user?.id,
     }

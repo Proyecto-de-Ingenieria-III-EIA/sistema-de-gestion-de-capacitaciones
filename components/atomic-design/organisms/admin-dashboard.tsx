@@ -8,7 +8,6 @@ import {
   DELETE_TRAINING,
   DUPLICATE_TRAINING,
 } from '@/graphql/frontend/trainings';
-import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -21,7 +20,6 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { Delete } from 'lucide-react';
 
 interface AdminDashboardProps {
   trainings: Training[];
@@ -30,24 +28,13 @@ interface AdminDashboardProps {
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   trainings,
 }) => {
-  const { data: session } = useSession();
   const [deleteTrainingId, setDeleteTrainingId] = React.useState<string | null>(null);
 
   const [deleteTraining] = useMutation(DELETE_TRAINING, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     refetchQueries: ['GetTrainings'],
   });
 
   const [duplicateTraining] = useMutation(DUPLICATE_TRAINING, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     refetchQueries: ['GetTrainings'],
   });
 

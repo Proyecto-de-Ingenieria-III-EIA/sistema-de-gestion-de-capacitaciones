@@ -5,22 +5,17 @@ import {
   GET_TRAINING_MATERIALS,
   DELETE_TRAINING_MATERIAL,
 } from '@/graphql/frontend/trainings';
-import { useSession } from 'next-auth/react';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+  AlertDialog,
   AlertDialogHeader,
   AlertDialogFooter,
-} from '@/components/ui/alert-dialog';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogCancel,
   AlertDialogAction,
-  AlertDialogOverlay,
 } from '@/components/ui/alert-dialog';
 
 interface TrainingMaterial {
@@ -39,7 +34,6 @@ export default function TrainingMaterialsTable({
   trainingId,
   canModifyMaterial,
 }: TrainingMaterialsTableProps) {
-  const { data: session } = useSession();
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [fileType, setFileType] = useState('');
   const [fileUrl, setFileUrl] = useState('');
@@ -50,32 +44,17 @@ export default function TrainingMaterialsTable({
 
   const { data } = useQuery(GET_TRAINING_MATERIALS, {
     variables: { trainingId },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const [addTrainingMaterial, { loading: adding }] = useMutation(
     ADD_TRAINING_MATERIAL,
     {
       refetchQueries: ['GetTrainingMaterials'],
-      context: {
-        headers: {
-          'session-token': session?.sessionToken,
-        },
-      },
     }
   );
 
   const [deleteTrainingMaterial] = useMutation(DELETE_TRAINING_MATERIAL, {
     refetchQueries: ['GetTrainingMaterials'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const handleAddMaterial = async () => {

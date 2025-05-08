@@ -2,7 +2,6 @@ import { Context } from '@/types';
 
 export const sessionResolvers = {
   Query: {
-    // Fetch a session by sessionToken
     getSession: async (
       _: unknown,
       args: { sessionToken: string },
@@ -10,13 +9,12 @@ export const sessionResolvers = {
     ) => {
       return db.session.findUnique({
         where: { sessionToken: args.sessionToken },
-        include: { user: true }, // Include the user associated with the session
+        include: { user: true },
       });
     },
   },
 
   Mutation: {
-    // Create a new session
     createSession: async (
       _: unknown,
       args: { sessionToken: string; userId: string; expires: Date },
@@ -28,11 +26,10 @@ export const sessionResolvers = {
           userId: args.userId,
           expires: args.expires,
         },
-        include: { user: true }, // Include the user associated with the session
+        include: { user: true }, 
       });
     },
 
-    // Delete a session by sessionToken
     deleteSession: async (
       _: unknown,
       args: { sessionToken: string },
@@ -45,7 +42,6 @@ export const sessionResolvers = {
     },
   },
 
-  // Resolver for the `user` field in the `Session` type
   Session: {
     user: async (parent: { userId: string }, _: unknown, { db }: Context) => {
       return db.user.findUnique({

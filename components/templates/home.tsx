@@ -18,11 +18,6 @@ const Home = () => {
 
   const { data: instructing } = useQuery(GET_TRAININGS_BY_INSTRUCTOR, {
     variables: { instructorId: session?.user?.id },
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
     skip: !session?.user?.id || session.user?.roleId !== 2,
   });
 

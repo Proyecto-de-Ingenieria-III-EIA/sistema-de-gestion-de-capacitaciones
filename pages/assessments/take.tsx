@@ -20,39 +20,19 @@ export default function TakeAssessment() {
   const { data, loading, error } = useQuery(GET_ASSESSMENT_BY_ID, {
     variables: { assessmentId },
     skip: !assessmentId,
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const [submitAssessmentResult] = useMutation(SUBMIT_ASSESSMENT_RESULT, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     refetchQueries: [
       {
         query: GET_TRAINING_BY_ID,
         variables: { trainingId: data?.getAssessmentById?.training.id },
-        context: {
-          headers: {
-            'session-token': session?.sessionToken,
-          },
-        },
       },
       {
         query: GET_ASSESSMENT_PROGRESS_BY_TRAINING,
         variables: {
           userId: session?.user?.id,
           trainingId: data?.getAssessmentById?.training.id,
-        },
-        context: {
-          headers: {
-            'session-token': session?.sessionToken,
-          },
         },
       },
       {
@@ -61,13 +41,9 @@ export default function TakeAssessment() {
           userId: session?.user?.id,
           trainingId: data?.getAssessmentById?.training.id,
         },
-        context: {
-          headers: {
-            'session-token': session?.sessionToken,
-          },
-        },
       },
     ],
+    awaitRefetchQueries: true,
   });
 
   const assessment = data?.getAssessmentById;

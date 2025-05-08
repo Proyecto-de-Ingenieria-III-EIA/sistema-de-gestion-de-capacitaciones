@@ -1,38 +1,23 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_USERS, UPDATE_USERS } from '@/graphql/frontend/users';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
 import AdminLayout from '@/components/layouts/admin-layout';
 import { roleMapping } from '@/types/roles';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 import { User } from '@prisma/client';
-import MainLayout from '@/components/layouts/main-layout';
 
 export default function AdminUsers() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const { data, loading, error } = useQuery(GET_USERS, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
-  });
+  const { data, loading, error } = useQuery(GET_USERS);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editableUsers, setEditableUsers] = useState<any[]>([]);
 
   const [updateUsers] = useMutation(UPDATE_USERS, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     refetchQueries: [
       {
         query: GET_USERS,
-        context: { headers: { 'session-token': session?.sessionToken } },
       },
     ],
   });

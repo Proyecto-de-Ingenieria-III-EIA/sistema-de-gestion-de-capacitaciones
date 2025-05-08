@@ -55,6 +55,9 @@ export const mutations = {
         userId: args.userId,
         forumPostId: args.forumPostId,
       },
+      include: {
+        user: true
+      }
     }),
 
   deleteComment: async (

@@ -81,17 +81,6 @@ export const GET_PROGRESS_IN_TRAININGS = gql`
   }
 `;
 
-export const GET_PROGRESS_IN_TRAININGS = gql`
-  query GetUserProgressForTrainings($userId: String!) {
-    getUserProgressForTrainings(userId: $userId) {
-      trainingId
-      trainingTitle
-      totalAssessments
-      passedAssessments
-      progress
-    }
-  }
-`;
 
 
 export const UPDATE_USER = gql`

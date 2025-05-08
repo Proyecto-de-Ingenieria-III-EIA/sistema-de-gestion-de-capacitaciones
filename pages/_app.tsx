@@ -9,6 +9,7 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { SessionProvider } from 'next-auth/react';
 import { ApolloProvider } from '@apollo/client';
 import client from '@/apollo-client';
+import { Toaster } from 'sonner';
 
 const AppWrapper = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -86,6 +87,7 @@ const AppWrapper = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       {getLayout()}
+      <Toaster richColors position="top-right" />
     </ApolloProvider>
   );
 };

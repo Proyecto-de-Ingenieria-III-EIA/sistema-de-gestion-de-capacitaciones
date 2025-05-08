@@ -66,9 +66,48 @@ export const GET_PROGRESS_IN_TRAININGS = gql`
     getUserProgressForTrainings(userId: $userId) {
       trainingId
       trainingTitle
+  query GetUserAssessmentProgressInTraining(
+    $userId: String!
+    $trainingId: String!
+  ) {
+    getUserAssessmentProgressInTraining(
+      userId: $userId
+      trainingId: $trainingId
+    ) {
       totalAssessments
       passedAssessments
       progress
+    }
+  }
+`;
+
+export const GET_PROGRESS_IN_TRAININGS = gql`
+  query GetUserProgressForTrainings($userId: String!) {
+    getUserProgressForTrainings(userId: $userId) {
+      trainingId
+      trainingTitle
+      totalAssessments
+      passedAssessments
+      progress
+    }
+  }
+`;
+
+
+export const UPDATE_USER = gql`
+  mutation updateUser(
+    $id: String!
+    $name: String
+    $phone: String
+    $area: String
+    $image: String
+  ) {
+    updateUser(id: $id, name: $name, phone: $phone, area: $area, image: $image) {
+      id
+      name
+      phone
+      area
+      image
     }
   }
 `;

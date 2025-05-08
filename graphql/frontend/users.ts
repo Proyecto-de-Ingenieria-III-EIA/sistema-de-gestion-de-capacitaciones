@@ -73,6 +73,25 @@ export const GET_PROGRESS_IN_TRAININGS = gql`
   }
 `;
 
+
+export const UPDATE_USER = gql`
+  mutation updateUser(
+    $id: String!
+    $name: String
+    $phone: String
+    $area: String
+    $image: String
+  ) {
+    updateUser(id: $id, name: $name, phone: $phone, area: $area, image: $image) {
+      id
+      name
+      phone
+      area
+      image
+    }
+  }
+`;
+
 export const UPDATE_USERS = gql`
   mutation UpdateUsers($users: [UpdateUserInput!]!) {
     updateUsers(users: $users) {

@@ -8,7 +8,11 @@ declare module "next-auth" {
       name?: string;
       email?: string;
       image?: string;
+      area?: string;
+      phone?: string;
       roleId?: number;
+      roleName?: "ADMIN" | "INSTRUCTOR" | "USER";
+      createdAt?: string;
     };
   }
 }

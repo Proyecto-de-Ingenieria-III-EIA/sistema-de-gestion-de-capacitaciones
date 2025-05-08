@@ -1,14 +1,19 @@
+import client from "@/apollo-client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useSidebar } from "@/components/ui/sidebar"
+import { DELETE_SESSION } from "@/graphql/frontend/session"
+import { useMutation, useQuery } from "@apollo/client"
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import router from "next/router"
 
 export function NavUser () {
 
     const { data: session } = useSession()
     const { isMobile } = useSidebar()
+    const [deleteSession] = useMutation(DELETE_SESSION);
     return (
         
         <DropdownMenu>
@@ -52,7 +57,7 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push(`/profile/user?id=${session?.user?.id}`)}>
                     <Sparkles />
                     Profile
                   </DropdownMenuItem>
@@ -78,15 +83,16 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem
-                    onClick={async () => {
-                    localStorage.clear(); 
-                    sessionStorage.clear();
-                    await signOut({ redirect: false });
-                    window.location.href = "/";
-                    }}
-                    >
-                  <LogOut />
-                  Log out
+                onClick={async () => {
+                    localStorage.clear();
+                    signOut({
+                        callbackUrl: "/"
+                      });
+                    client.resetStore();
+                }}
+                >
+                <LogOut />
+                Log out
                 </DropdownMenuItem>
 
             </DropdownMenuContent>

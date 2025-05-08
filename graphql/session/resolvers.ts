@@ -1,9 +1,13 @@
-import { Context } from "@/types";
+import { Context } from '@/types';
 
 export const sessionResolvers = {
   Query: {
     // Fetch a session by sessionToken
-    getSession: async (_: unknown, args: { sessionToken: string }, { db }: Context) => {
+    getSession: async (
+      _: unknown,
+      args: { sessionToken: string },
+      { db }: Context
+    ) => {
       return db.session.findUnique({
         where: { sessionToken: args.sessionToken },
         include: { user: true }, // Include the user associated with the session
@@ -29,7 +33,11 @@ export const sessionResolvers = {
     },
 
     // Delete a session by sessionToken
-    deleteSession: async (_: unknown, args: { sessionToken: string }, { db }: Context) => {
+    deleteSession: async (
+      _: unknown,
+      args: { sessionToken: string },
+      { db }: Context
+    ) => {
       await db.session.delete({
         where: { sessionToken: args.sessionToken },
       });

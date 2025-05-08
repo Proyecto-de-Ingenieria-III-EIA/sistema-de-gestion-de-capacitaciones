@@ -2,15 +2,13 @@ import { Context } from '@/types';
 import { validateRole } from '@/utils/validateRole';
 
 export const mutations = {
-  // Training materials mutations
   createTrainingMaterial: async (
     _: unknown,
     args: { trainingId: string; fileType: string; fileUrl: string },
     { db, authData }: Context
   ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
-    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
-  
     const training = await db.training.findUnique({
       where: { id: args.trainingId },
     });
@@ -34,9 +32,8 @@ export const mutations = {
     args: { id: string; fileType?: string; fileUrl?: string },
     { db, authData }: Context
   ) => {
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
-    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
-    
     const trainingMaterialExists = await db.trainingMaterial.findUnique({
       where: { id: args.id },
     });
@@ -60,7 +57,7 @@ export const mutations = {
     args: { id: string },
     { db, authData }: Context
   ) => {
-    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
     return db.trainingMaterial.delete({ where: { id: args.id } });
   },
   // Training mutations
@@ -68,8 +65,8 @@ export const mutations = {
     _: unknown,
     args: { title: string; description: string; instructorId: string },
     { db, authData }: Context
-  ) =>{
-    validateRole( db, authData, ['ADMIN']);
+  ) => {
+    validateRole(db, authData, ['ADMIN']);
 
     return db.training.create({
       data: {
@@ -90,20 +87,21 @@ export const mutations = {
       description?: string;
       isHidden?: boolean;
       isPublic?: boolean;
+      imageSrc?: string;
       instructorId?: string;
     },
     { db, authData }: Context
   ) => {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
-  
+
     const existingTraining = await db.training.findUnique({
       where: { id: args.id },
     });
-  
+
     if (!existingTraining) {
       throw new Error('Training not found');
     }
-  
+
     return db.training.update({
       where: { id: args.id },
       data: {
@@ -111,23 +109,28 @@ export const mutations = {
         description: args.description ?? existingTraining.description,
         isHidden: args.isHidden ?? existingTraining.isHidden,
         isPublic: args.isPublic ?? existingTraining.isPublic,
+        imageSrc: args.imageSrc ?? existingTraining.imageSrc,
         instructorId: args.instructorId ?? existingTraining.instructorId,
       },
       include: { instructor: true },
     });
   },
 
-  deleteTraining: async (_: unknown, args: { id: string }, { db, authData}: Context) => {
-    await validateRole(db, authData, ["ADMIN"]);
-    
-      const training = await db.training.findUnique({
-        where: { id: args.id },
-      });
-    
-      if (!training) {
-        throw new Error("Training not found");
-      }
-      
+  deleteTraining: async (
+    _: unknown,
+    args: { id: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN']);
+
+    const training = await db.training.findUnique({
+      where: { id: args.id },
+    });
+
+    if (!training) {
+      throw new Error('Training not found');
+    }
+
     return db.training.delete({ where: { id: training.id } });
   },
 
@@ -139,7 +142,7 @@ export const mutations = {
   ) => {
     const instructor = await db.user.findUnique({
       where: { id: args.instructorId },
-      select: { role: {select: {name: true}}},
+      select: { role: { select: { name: true } } },
     });
 
     //verificar que solo podamos agregar instructores
@@ -153,18 +156,18 @@ export const mutations = {
     });
 
     //verifica si ya tiene un instructor para cambiarlo
-    if(existingTraining?.instructorId) {
+    if (existingTraining?.instructorId) {
       return db.training.update({
-        where: { id: args.trainingId},
-        data: { instructorId: args.instructorId},
+        where: { id: args.trainingId },
+        data: { instructorId: args.instructorId },
       });
     }
 
     // si esta en null, lo agrega normalmente
     return db.training.update({
-      where: { id: args.trainingId},
-      data: { instructorId: args.instructorId},
-    })
+      where: { id: args.trainingId },
+      data: { instructorId: args.instructorId },
+    });
   },
 
   toggleTrainingVisibility: async (
@@ -172,7 +175,7 @@ export const mutations = {
     args: { trainingId: string },
     { db, authData }: Context
   ) => {
-    await validateRole( db, authData, ['ADMIN', 'INSTRUCTOR']);
+    await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
 
     const training = await db.training.findUnique({
       where: { id: args.trainingId },
@@ -187,7 +190,6 @@ export const mutations = {
       where: { id: args.trainingId },
       data: { isHidden: !training.isHidden },
     });
-
   },
 
   duplicateTraining: async (
@@ -196,7 +198,7 @@ export const mutations = {
     { db, authData }: Context
   ) => {
     await validateRole(db, authData, ['ADMIN', 'INSTRUCTOR']);
-  
+
     const existingTraining = await db.training.findUnique({
       where: { id: args.trainingId },
       include: {
@@ -211,27 +213,27 @@ export const mutations = {
         instructor: true,
       },
     });
-  
+
     if (!existingTraining) {
       throw new Error('Training not found');
     }
-  
+
     const duplicatedTraining = await db.training.create({
       data: {
         title: `${existingTraining.title} (Copy)`,
         description: existingTraining.description,
-        isHidden: true, 
+        isHidden: true,
         isPublic: false,
         imageSrc: existingTraining.imageSrc,
         instructorId: existingTraining.instructorId,
-  
+
         materials: {
           create: existingTraining.materials.map((material) => ({
             fileType: material.fileType,
             fileUrl: material.fileUrl,
           })),
         },
-  
+
         // Duplicate assessments with their questions
         assessments: {
           create: existingTraining.assessments.map((assessment) => ({
@@ -256,8 +258,7 @@ export const mutations = {
         instructor: true,
       },
     });
-  
+
     return duplicatedTraining;
   },
-  
 };

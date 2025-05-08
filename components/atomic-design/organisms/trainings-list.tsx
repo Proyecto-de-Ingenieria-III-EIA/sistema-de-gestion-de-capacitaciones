@@ -5,9 +5,10 @@ import { Training } from "@prisma/client";
 interface TrainingsListProps {
   trainings: Training[]; 
   buttons: { label: string; onClick: (training: Training) => void }[]; 
+  text?: string
 }
 
-export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons }) => {
+export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons, text }) => {
   return (
     <div>
       {trainings && trainings.length > 0 ? (
@@ -27,7 +28,7 @@ export const TrainingsList: React.FC<TrainingsListProps> = ({ trainings, buttons
         </div>
       ) : (
         <p className="text-gray-500 text-center mt-4">
-          You are currently not enrolled in any training.
+          {text || "You are currently not enrolled in any training."}
         </p>
       )}
     </div>

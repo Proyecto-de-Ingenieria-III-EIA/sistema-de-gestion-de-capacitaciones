@@ -12,8 +12,11 @@ export const queries = {
     { db }: Context
   ) => db.enrollment.findMany({ where: { userId: args.userId } }),
 
-  getParticipantsProgress : async (_: unknown, __: unknown, { db, authData }: Context) => {
-    
+  getParticipantsProgress: async (
+    _: unknown,
+    __: unknown,
+    { db, authData }: Context
+  ) => {
     await validateRole(db, authData, ['ADMIN']);
 
     const progressData = await db.user.findMany({
@@ -30,11 +33,13 @@ export const queries = {
       },
     });
 
-    const participantsProgress = progressData.map( u => {
+    const participantsProgress = progressData.map((u) => {
       const totalTrainings = u.enrollments.length;
-      const completedTrainings = u.enrollments.filter( e => e.progress === 'COMPLETED').length;
-      const completionRate = totalTrainings > 0 ? (completedTrainings / totalTrainings) * 100 : 0;
-
+      const completedTrainings = u.enrollments.filter(
+        (e) => e.progress === 'COMPLETED'
+      ).length;
+      const completionRate =
+        totalTrainings > 0 ? (completedTrainings / totalTrainings) * 100 : 0;
 
       return {
         userId: u.id,
@@ -47,71 +52,77 @@ export const queries = {
     });
 
     return participantsProgress;
-    },
+  },
 
-    getUserProgress: async (_: unknown, __: unknown, { db, authData }: Context) => {
-      
-      validateAuth(authData);
+  getUserProgress: async (
+    _: unknown,
+    __: unknown,
+    { db, authData }: Context
+  ) => {
+    validateAuth(authData);
 
-      const userEnrollments = await db.enrollment.findMany({
-        where: { userId: authData.id },
-        select: {
-          trainingId: true,
-          progress: true,
-          status: true,
-        },
-      });
+    const userEnrollments = await db.enrollment.findMany({
+      where: { userId: authData.id },
+      select: {
+        trainingId: true,
+        progress: true,
+        status: true,
+      },
+    });
 
-      const totalTrainings = userEnrollments.length;
-      const completedTrainings = userEnrollments.filter( e => e.progress === 'COMPLETED' && e.status === 'APPROVED').length;
+    const totalTrainings = userEnrollments.length;
+    const completedTrainings = userEnrollments.filter(
+      (e) => e.progress === 'COMPLETED' && e.status === 'APPROVED'
+    ).length;
 
-      const completionRate = totalTrainings > 0 ? (completedTrainings / totalTrainings) * 100 : 0;
+    const completionRate =
+      totalTrainings > 0 ? (completedTrainings / totalTrainings) * 100 : 0;
 
-      return {
-        userId: authData.id,
-        totalTrainings,
-        completedTrainings,
-        completionRate: `${completionRate.toFixed(2)}%`,
-      };
-    },
+    return {
+      userId: authData.id,
+      totalTrainings,
+      completedTrainings,
+      completionRate: `${completionRate.toFixed(2)}%`,
+    };
+  },
 
-    getEnrollmentsByTraining: async (
-      _: unknown,
-      args: { trainingId: string },
-      { db, authData }: Context
-    ) => {
-      await validateRole(db, authData, ['ADMIN']);
+  getEnrollmentsByTraining: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN']);
 
-      return db.enrollment.findMany({
-        where: { trainingId: args.trainingId },
-        include: { user: true },
-      });
-    },
-    
-    getAvailableUsersForTraining: async (
-      _: unknown,
-      args: { trainingId: string },
-      { db, authData }: Context
-    ) => {
-      await validateRole(db, authData, ['ADMIN']);
-    
-      const enrolledUserIds = await db.enrollment.findMany({
-        where: { trainingId: args.trainingId },
-        select: { userId: true },
-      });
-    
-      const enrolledIds = enrolledUserIds.map((enrollment) => enrollment.userId);
-    
-      return db.user.findMany({
-        where: {
-          id: { notIn: enrolledIds }, 
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          area: true,
-        },
-      });
-    },
+    return db.enrollment.findMany({
+      where: { trainingId: args.trainingId },
+      include: { user: true },
+    });
+  },
+
+  getAvailableUsersForTraining: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN']);
+
+    const enrolledUserIds = await db.enrollment.findMany({
+      where: { trainingId: args.trainingId },
+      select: { userId: true },
+    });
+
+    const enrolledIds = enrolledUserIds.map((enrollment) => enrollment.userId);
+
+    return db.user.findMany({
+      where: {
+        id: { notIn: enrolledIds },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        area: true,
+      },
+    });
+  },
 };

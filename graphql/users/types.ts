@@ -27,6 +27,22 @@ export const userTypes = gql`
     progress: Float!
   }
 
+  type TrainingProgress {
+    trainingId: String!
+    trainingTitle: String!
+    totalAssessments: Int!
+    passedAssessments: Int!
+    progress: Float!
+  }
+
+  input UpdateUserInput {
+    id: String!
+    name: String
+    phone: String
+    area: String
+    roleId: Int
+  }
+
   ## Queries
   type Query {
     # Users
@@ -39,6 +55,7 @@ export const userTypes = gql`
       userId: String!
       trainingId: String!
     ): UserAssessmentProgress
+    getUserProgressForTrainings(userId: String!): [TrainingProgress!]!
   }
 
   ## Mutations
@@ -51,6 +68,9 @@ export const userTypes = gql`
       area: String
       image: String
     ): User
+
+    updateUsers(users: [UpdateUserInput!]!): [User]
+
 
     deleteUser(id: String!): Boolean
     

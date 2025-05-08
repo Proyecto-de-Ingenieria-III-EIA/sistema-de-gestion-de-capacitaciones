@@ -5,8 +5,8 @@ import { EnrollmentStatus } from '@prisma/client';
 export const mutations = {
   // Enrollment mutations
   subscribeToTraining: async (
-    _: unknown, 
-    args: { trainingId: string, userId?: string }, 
+    _: unknown,
+    args: { trainingId: string; userId?: string },
     { db, authData }: Context
   ) => {
     if (!authData) {
@@ -30,8 +30,8 @@ export const mutations = {
 
     const existingEnrollment = await db.enrollment.findFirst({
       where: {
-          trainingId: args.trainingId,
-          userId: userId,
+        trainingId: args.trainingId,
+        userId: userId,
       },
     });
 
@@ -47,11 +47,11 @@ export const mutations = {
       data: {
         trainingId: args.trainingId,
         userId: userId,
-        status
+        status,
       },
       include: {
         user: { select: { id: true, name: true, enrollments: true } },
-        training: { select: { id: true, title: true, enrollments: true } }, 
+        training: { select: { id: true, title: true, enrollments: true } },
       },
     });
 
@@ -68,23 +68,23 @@ export const mutations = {
       data: { status: args.status },
     }),
 
-    deleteEnrollment: async (
-      _: unknown,
-      args: { id: string },
-      { db, authData }: Context
-    ) => {
-      await validateRole(db, authData, ["ADMIN"]);
-    
-      const enrollment = await db.enrollment.findUnique({
-        where: { id: args.id },
-      });
-    
-      if (!enrollment) {
-        throw new Error("Enrollment not found");
-      }
-    
-      return db.enrollment.delete({
-        where: { id: args.id },
-      });
-    },
+  deleteEnrollment: async (
+    _: unknown,
+    args: { id: string },
+    { db, authData }: Context
+  ) => {
+    await validateRole(db, authData, ['ADMIN']);
+
+    const enrollment = await db.enrollment.findUnique({
+      where: { id: args.id },
+    });
+
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+
+    return db.enrollment.delete({
+      where: { id: args.id },
+    });
+  },
 };

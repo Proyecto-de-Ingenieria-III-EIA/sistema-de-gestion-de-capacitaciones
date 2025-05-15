@@ -1,25 +1,26 @@
 import { ForumPostList } from "../atomic-design/organisms/forum-postlist";
-import { ForumSidebar } from "../atomic-design/organisms/forum-sidebar";
+import { ForumAppSidebar } from "../atomic-design/organisms/forum-sidebar/forum-sidebar";
+import { ForumSidebar } from "../atomic-design/organisms/forum-sidebar2";
 import { NewForumPostDialog } from "../atomic-design/organisms/new-forumpost-dialog";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 
 export default function ForumPage() {
     return (
         <div className="flex gap-6 p-6">
-            <aside className="w-1/4">
-                <ForumSidebar/>
-            </aside>
+            <SidebarProvider>
+                <ForumAppSidebar />
 
-            <main className="flex-1">
-                <div className="flex justify-between items-center mb-4">
-                    <NewForumPostDialog  /> 
-                    <div>
-                        <button>Latest ▼</button>
-                        <button className="ml-4">Mark all as read</button>
+            <SidebarInset>
+                <main className="flex-1 mt-8 mr-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <SidebarTrigger className="-ml-1" />
+                        <NewForumPostDialog  /> 
                     </div>
-                </div>
 
-                <ForumPostList />
-            </main>
+                    <ForumPostList />
+                </main>
+            </SidebarInset>
+            </SidebarProvider>
         </div>
     );
 }

@@ -81,3 +81,15 @@ export const GET_FORUM_POST_BY_ID = gql`
     }
   }
 `;
+
+export const DELETE_FORUM_POST = gql`
+  mutation DeleteForumPost($id: String!) {
+    deleteForumPost(id: $id)
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation DeleteComment($id: String!) {
+    deleteComment(id: $id)
+  }
+`;

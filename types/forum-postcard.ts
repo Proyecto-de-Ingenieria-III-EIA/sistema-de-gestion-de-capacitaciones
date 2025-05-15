@@ -6,6 +6,8 @@ export interface ForumPostCardProps {
     createdAt: string; 
     training: string;
     commentsCount?: number;
+    showActions?: boolean;
+    isAdmin?: boolean;
   }
 
 export type FormValues = {

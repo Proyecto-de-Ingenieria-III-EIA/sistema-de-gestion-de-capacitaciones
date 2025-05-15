@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useSession } from "next-auth/react";
+import { UserAvatar } from "../../atoms/user-avatar";
 
 type Props = {
     onEditClick: () => void;
@@ -21,13 +22,7 @@ export default function UserProfileHeader({ onEditClick }: Props) {
             <>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
-                        {/* <div className="bg-orange-100 text-orange-800 font-bold rounded-full w-12 h-12 flex items-center justify-center text-xl">
-                            RF
-                        </div> */}
-                        <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar />
                         <div>
                             <h2 className="text-xl font-semibold">{session.user?.name}</h2>
                             <p className="text-sm text-muted-foreground">Area: {session.user?.area}</p>

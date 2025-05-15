@@ -57,7 +57,7 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push(`/profile/user?id=${session?.user?.id}`)}>
+                  <DropdownMenuItem onClick={() => router.push(`/user-profile`)}>
                     <Sparkles />
                     Profile
                   </DropdownMenuItem>

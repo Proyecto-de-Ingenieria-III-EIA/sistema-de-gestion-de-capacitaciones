@@ -16,7 +16,11 @@ const schema = z.object({
     trainingId: z.string().min(1, { message: "Selecciona un training" }),
 });
 
-export function ForumPostForm() {
+type ForumPostFormProps = {
+  onSuccess: () => void;
+};
+
+export function ForumPostForm({ onSuccess }: ForumPostFormProps) {
 
     const { data: session } = useSession();
     const [createPost, { loading }] = useMutation(CREATE_FORUM_POST, {
@@ -49,6 +53,7 @@ export function ForumPostForm() {
                 },
             });
             form.reset();
+            onSuccess();
         } catch (error) {
             console.error("Error creating post", error);
         }
@@ -107,7 +112,7 @@ export function ForumPostForm() {
                 />
 
                 <Button type="submit" disabled={loading}>
-                    {loading ? "Publicando..." : "Publicar"}
+                    {loading ? "Publishing..." : "Publish"}
                 </Button>
             </form>
         </Form>

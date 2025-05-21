@@ -15,7 +15,9 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import { NavUser } from "../molecules/nav-user";
-import { House } from "lucide-react";
+import { House, LayoutDashboard } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface DropdownItem {
   name: string;
@@ -38,19 +40,25 @@ interface HeaderProps {
 
 export default function Header({ buttons, firstLinkHref }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <header className="bg-skyblue">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <Link href={firstLinkHref} className="grid grid-cols-1 ml-5 text-teal">
-              <House
-                width={40}
-                height={40}
-                color="teal"
-              />
+          {pathname !== "/" && (
+            <Link href={firstLinkHref} className="grid grid-cols-1 ml-5 text-teal justify-items-center">
+              <House width={40} height={40} color="teal" />
               <p>Home</p>
-          </Link>
+            </Link>
+          )}
+          {pathname == "/" && session?.user.roleName === "ADMIN" && (
+            <Link href="/admin-dashboard" className="grid grid-cols-1 ml-5 text-teal justify-items-center">
+              <LayoutDashboard width={40} height={40} color="teal" />
+              <p>Dashboard</p>
+            </Link>
+          )}
         </div>
         <div className="flex lg:hidden">
           <Button

@@ -21,14 +21,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       label: "Forum",
       href: "/forum", 
     },
-    ...(isAdmin
-      ? [
-          {
-            label: "Dashboard",
-            href: "/admin-dashboard",
-          },
-        ]
-      : []),
   ];
   return (
     <div className="flex flex-col min-h-screen">

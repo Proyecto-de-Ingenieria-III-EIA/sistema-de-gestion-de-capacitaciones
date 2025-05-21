@@ -28,7 +28,14 @@ export const queries = {
   getPublicTrainings(_: unknown, __: unknown, { db, authData }: Context) {
     
     return db.training.findMany({
-      where: { isPublic: true},
+      where: { 
+        isPublic: true,
+        enrollments: {
+          none: {
+            userId: authData.id
+          },
+        },
+      },
       include: {
         instructor: true,
         materials: true,

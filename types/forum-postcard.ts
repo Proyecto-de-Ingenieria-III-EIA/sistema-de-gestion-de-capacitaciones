@@ -8,6 +8,7 @@ export interface ForumPostCardProps {
     commentsCount?: number;
     showActions?: boolean;
     isAdmin?: boolean;
+    filter?: any;
   }
 
 export type FormValues = {

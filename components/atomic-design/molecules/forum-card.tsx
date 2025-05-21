@@ -10,7 +10,7 @@ import { DialogHeader } from "@/components/ui/dialog";
 import { NewCommentDialog } from "../organisms/new-comment-dialog";
 import Link from "next/link";
 import { useMutation } from "@apollo/client";
-import { DELETE_FORUM_POST } from "@/graphql/frontend/forum";
+import { DELETE_FORUM_POST, GET_FORUM_POSTS_WITH_FILTER } from "@/graphql/frontend/forum";
 import { toast } from "sonner";
 import { DeletePostDialog } from "./delete-post-dialog";
   
@@ -25,11 +25,12 @@ export function ForumPostCard({
     commentsCount = 0,
     showActions,
     isAdmin,
+    filter
 } : ForumPostCardProps) {
     const timeAgo = formatDistanceToNow(new Date(createdAt), {addSuffix: true});
 
     const [ deleteForumPost ] = useMutation(DELETE_FORUM_POST, {
-        refetchQueries: ["GetForumPosts"],
+        refetchQueries: [ { query: GET_FORUM_POSTS_WITH_FILTER, variables: { filter } }],
     })
 
     const handleDelete = async () => {

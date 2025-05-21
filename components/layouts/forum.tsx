@@ -41,7 +41,7 @@ export default function ForumPage() {
                     )}
 
                     <ForumPostList 
-                        posts={data?.getFilteredForumPosts ?? []}
+                        filter={filter}
                         isAdmin={session?.user.roleName === "ADMIN"}
                     />
                 </main>

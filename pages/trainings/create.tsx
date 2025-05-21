@@ -1,7 +1,6 @@
 import CreateForm from "@/components/templates/Create";
 import * as z from "zod";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_INSTRUCTORS } from "@/graphql/frontend/users";
 import { CREATE_TRAINING, GET_TRAININGS } from "@/graphql/frontend/trainings";
@@ -9,30 +8,13 @@ import AdminLayout from "@/components/layouts/admin-layout";
 import router from "next/router";
 
 export default function CreateTraining() {
-  const { data: session } = useSession();
   const [createTraining, { loading: mutationLoading, error: mutationError }] = useMutation(CREATE_TRAINING, {
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
     refetchQueries: [{
       query: GET_TRAININGS,
-      context: {
-        headers: {
-          "session-token": session?.sessionToken,
-        },
-      },
     }],
   });
 
-  const { data, loading, error } = useQuery(GET_INSTRUCTORS, {
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
-  });
+  const { data, loading, error } = useQuery(GET_INSTRUCTORS);
 
   if (loading) return <p>Loading instructors...</p>;
   if (error) return <p>Error loading instructors: {error.message}</p>;

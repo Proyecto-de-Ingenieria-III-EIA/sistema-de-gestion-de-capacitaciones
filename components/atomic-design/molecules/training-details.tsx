@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client";
 import { GET_TRAINING_BY_ID } from "@/graphql/frontend/trainings";
 import TrainingMaterialsTable from "@/components/atomic-design/molecules/training-materials-table";
 import AssessmentsTable from "@/components/atomic-design/molecules/assessments-table";
-import { useSession } from "next-auth/react";
 import { Assessment } from "@prisma/client";
 import { useCallback } from "react";
 
@@ -13,7 +12,6 @@ interface TrainingDetailsProps {
 
 export default function TrainingDetails({layout}: TrainingDetailsProps) {
   const router = useRouter();
-  const {data: session} = useSession();
   const { id } = router.query;
 
   const handleNavigation = (assessment: Assessment, path: string) => {
@@ -52,11 +50,6 @@ export default function TrainingDetails({layout}: TrainingDetailsProps) {
 
   const { data, loading, error } = useQuery(GET_TRAINING_BY_ID, {
     variables: { trainingId: id },
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
     skip: !id,
   });
 

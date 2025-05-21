@@ -7,13 +7,13 @@ import { useMutation, useQuery } from "@apollo/client"
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
 import router from "next/router"
 
 export function NavUser () {
 
     const { data: session } = useSession()
     const { isMobile } = useSidebar()
-    const [deleteSession] = useMutation(DELETE_SESSION);
     return (
         
         <DropdownMenu>

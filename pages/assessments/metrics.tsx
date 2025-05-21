@@ -1,8 +1,6 @@
 import { useRouter } from "next/router";
 import { useQuery } from "@apollo/client";
 import { GET_ASSESSMENT_METRICS, GET_ASSESSMENT_RESULTS } from "@/graphql/frontend/assessments";
-import { User } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import AdminLayout from "@/components/layouts/admin-layout";
 import MainLayout from "@/components/layouts/main-layout";
 
@@ -13,28 +11,17 @@ const layouts = {
 
 export default function MetricsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const { id, layout } = router.query;
 
   const Layout = layouts[layout as keyof typeof layouts] || MainLayout;
 
   const { data, loading, error } = useQuery(GET_ASSESSMENT_METRICS, {
     variables: { assessmentId: id },
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
     skip: !id,
   });
 
   const { data: userResults} = useQuery(GET_ASSESSMENT_RESULTS, {
     variables: { assessmentId: id },
-    context: {
-      headers: {
-        "session-token": session?.sessionToken,
-      },
-    },
     skip: !id,
   })
 

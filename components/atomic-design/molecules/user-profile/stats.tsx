@@ -1,16 +1,9 @@
 import { GET_USER_PROGRESS } from "@/graphql/frontend/users";
 import { useQuery } from "@apollo/client";
-import { useSession } from "next-auth/react";
 
 
 export default function UserProfileStats() {
-    const {data, loading, error} = useQuery(GET_USER_PROGRESS, {
-        context: {
-              headers: {
-                "session-token": useSession()?.data?.sessionToken, 
-              },
-            }
-    })
+    const {data, loading} = useQuery(GET_USER_PROGRESS);
 
     if (loading || !data?.getUserProgress) return <div>Loading...</div>;
 

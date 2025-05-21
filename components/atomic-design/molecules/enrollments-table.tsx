@@ -8,7 +8,6 @@ import {
 import { SUBSCRIBE_TO_TRAINING_ADMIN } from '@/graphql/frontend/enrollments';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { Participant } from '@/types/participant';
-import { useSession } from 'next-auth/react';
 import { Combobox } from '@/components/ui/combobox';
 import { toast } from 'sonner';
 import {
@@ -32,18 +31,11 @@ interface EnrollmentsTableProps {
 export default function EnrollmentsTable({
   trainingId,
 }: EnrollmentsTableProps) {
-  const { data: session } = useSession();
   const [showAddParticipant, setShowAddParticipant] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Participant | null>(null);
-  const [participants, setParticipants] = useState<Participant[] | null>([]);
 
   const { data, loading, error } = useQuery(GET_AVAILABLE_USERS_FOR_TRAINING, {
     variables: { trainingId },
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     skip: !showAddParticipant,
   });
 
@@ -52,26 +44,10 @@ export default function EnrollmentsTable({
       trainingId: trainingId,
     },
     skip: !trainingId,
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
-
-  useEffect(() => {
-    if (enrollmentsData) {
-      setParticipants(enrollmentsData.getEnrollmentsByTraining);
-    }
-  }, [enrollmentsData]);
 
   const [subscribeToTraining] = useMutation(SUBSCRIBE_TO_TRAINING_ADMIN, {
     refetchQueries: ['GetEnrollmentsByTraining'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const handleAddParticipant = async () => {
@@ -105,11 +81,6 @@ export default function EnrollmentsTable({
 
   const [deleteEnrollment] = useMutation(DELETE_ENROLLMENT, {
     refetchQueries: ['GetEnrollmentsByTraining'],
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
   });
 
   const handleDeleteParticipant = async (enrollmentId: string) => {
@@ -148,8 +119,8 @@ export default function EnrollmentsTable({
           </tr>
         </thead>
         <tbody>
-          {participants &&
-            participants.map((participant) => (
+          {enrollmentsData?.getEnrollmentsByTraining &&
+            enrollmentsData.getEnrollmentsByTraining.map((participant: Participant) => (
               <tr key={participant.id} className='border-b border-gray-300'>
                 <td className='px-4 py-2'>{participant.user.name}</td>
                 <td className='px-4 py-2'>{participant.user.email}</td>

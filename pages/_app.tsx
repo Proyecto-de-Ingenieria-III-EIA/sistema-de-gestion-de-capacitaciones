@@ -9,7 +9,7 @@ import { PublicLayout } from '@/layouts/PublicLayout';
 import { SessionProvider } from 'next-auth/react';
 import { ApolloProvider } from '@apollo/client';
 import client from '@/apollo-client';
-import { Toaster } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import { ForumFilterProvider } from '@/context/forum-filter-context';
 
 const AppWrapper = ({ Component, pageProps }: AppProps) => {
@@ -45,7 +45,7 @@ const AppWrapper = ({ Component, pageProps }: AppProps) => {
   return (
     <ApolloProvider client={client}>
       <Head>
-        <title>Nombre del Sitio</title>
+        <title>Capacitaciones</title>
         <link
           rel='apple-touch-icon'
           sizes='192x192'

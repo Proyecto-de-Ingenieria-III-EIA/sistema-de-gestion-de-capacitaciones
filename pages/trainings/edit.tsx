@@ -8,7 +8,6 @@ import { GET_TRAININGS, UPDATE_TRAINING } from '@/graphql/frontend/trainings';
 import { GET_INSTRUCTORS } from '@/graphql/frontend/users';
 import { TrainingWithInstructor } from '@/types/training-instructor';
 import { useMutation, useQuery } from '@apollo/client';
-import { useSession } from 'next-auth/react';
 import router from 'next/router';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -20,7 +19,6 @@ const layouts = {
 };
 
 export default function EditTraining() {
-  const { data: session } = useSession();
 
   const { id, layout } = router.query;
 
@@ -30,27 +28,11 @@ export default function EditTraining() {
     data: instructorData,
     loading: instructorLoading,
     error: instructorError,
-  } = useQuery(GET_INSTRUCTORS, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
-  });
+  } = useQuery(GET_INSTRUCTORS);
 
   const [updateTraining] = useMutation(UPDATE_TRAINING, {
-    context: {
-      headers: {
-        'session-token': session?.sessionToken,
-      },
-    },
     refetchQueries: [{
       query: GET_TRAININGS,
-      context: {
-        headers: {
-          'session-token': session?.sessionToken,
-        },
-      },
     }],
   });
 

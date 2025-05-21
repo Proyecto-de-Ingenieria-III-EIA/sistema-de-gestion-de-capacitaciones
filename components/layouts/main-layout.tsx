@@ -1,29 +1,37 @@
 "use client"
 
 import Header from "@/components/atomic-design/organisms/header" // Asegúrate del path
-import { ChartPieIcon, CursorArrowRaysIcon } from "@heroicons/react/24/outline";
+import { BuildingLibraryIcon } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 import React from "react"
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
+
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.roleName === "ADMIN"
+
   const buttons = [
     {
       label: "Trainings",
       dropdownItems: [
-        { name: "Task1", description: "Description for Task1", href: "#", icon: ChartPieIcon },
-        { name: "Task2", description: "Description for Task2", href: "#", icon: CursorArrowRaysIcon },
+        { name: "Public Trainings", description: "Enroll to your favorite trainings", href: "/trainings/public-trainings", icon: BuildingLibraryIcon },
       ],
     },
     {
       label: "Forum",
       href: "/forum", 
     },
-    // {
-    //   label: "Da",
-    //   href: "/admin-dashboard",
-    // }
+    ...(isAdmin
+      ? [
+          {
+            label: "Dashboard",
+            href: "/admin-dashboard",
+          },
+        ]
+      : []),
   ];
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen">
       
       <Header buttons={buttons} firstLinkHref="/" />
 

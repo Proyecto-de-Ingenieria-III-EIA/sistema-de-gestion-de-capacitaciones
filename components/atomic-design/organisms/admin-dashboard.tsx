@@ -99,7 +99,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     };
 
   return (
-    <div className='p-6'>
+    <div>
       {/* Header */}
       <AdminLayout>
         {/* Trainings List */}

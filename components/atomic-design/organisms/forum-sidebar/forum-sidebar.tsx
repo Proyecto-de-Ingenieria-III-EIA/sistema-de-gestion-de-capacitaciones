@@ -82,15 +82,12 @@ export function ForumAppSidebar({ ...props }: React.ComponentProps<typeof Sideba
 
   const { data: session } = useSession();
 
-  const handleRedirect = () => {
-    const isAdmin = session?.user?.roleName === "ADMIN";
-    router.push(isAdmin ? "/admin-dashboard" : "/");
-  }
+  
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <Button onClick={handleRedirect}> 
+        <Button onClick={() => router.push("/")} className="bg-teal"> 
           <HomeIcon/>
           Home
         </Button>

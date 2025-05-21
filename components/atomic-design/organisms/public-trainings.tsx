@@ -7,7 +7,7 @@ export default function PublicTrainings() {
 
     const { data, loading, error } = useQuery(GET_PUBLIC_TRAININGS);
 
-     if (loading) return <p className="text-center">Cargando entrenamientos...</p>;
+     if (loading) return <p className="text-center">Loading trainings...</p>;
      if (error) return <p className="text-center text-red-500">Error: {error.message}</p>;
 
     return (

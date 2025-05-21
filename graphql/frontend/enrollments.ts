@@ -61,6 +61,23 @@ export const SUBSCRIBE_TO_TRAINING_ADMIN = gql`
   }
 `;
 
+export const ENROLL_TO_PUBLIC_TRAINING = gql`
+  mutation EnrollToPublicTraining($trainingId: String!) {
+    enrollToPublicTraining(trainingId: $trainingId) {
+      id
+      status
+      training {
+        id
+        title
+      }
+      user {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const DELETE_ENROLLMENT = gql`
   mutation DeleteEnrollment($id: String!) {
     deleteEnrollment(id: $id) {

@@ -34,6 +34,7 @@ export const trainingTypes = gql`
   type Query {
     getTrainingMaterials(trainingId: String!): [TrainingMaterial]
     getTrainings: [Training]
+    getPublicTrainings: [Training]
     getTrainingById(trainingId: String!): Training
     getTrainingsByUser(userId: String!): [Training]
     getTrainingsByInstructor(instructorId: String!): [Training]

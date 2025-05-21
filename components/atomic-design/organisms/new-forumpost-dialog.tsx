@@ -7,12 +7,12 @@ export function NewForumPostDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Crear una nueva discusión</Button>
+                <Button variant="outline">Create new discussion</Button>
             </DialogTrigger>
 
             <DialogContent className="max-w-md bg-white">
                 <DialogHeader>
-                    <DialogTitle>Iniciar una nueva discusión</DialogTitle>
+                    <DialogTitle>Start new discussion</DialogTitle>
                 </DialogHeader>
                 <ForumPostForm />
             </DialogContent>

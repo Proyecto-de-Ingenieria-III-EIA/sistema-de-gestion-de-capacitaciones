@@ -1,4 +1,5 @@
 import { Context } from '@/types';
+import { Prisma } from '@prisma/client';
 
 export const queries = {
   // Forum queries
@@ -39,4 +40,46 @@ export const queries = {
         }
       }
     }),
+
+  getFilteredForumPosts: async (
+    _: unknown,
+    args: { filter? : { sortBy?: string, onlyMyPosts?: boolean } },
+    { db, authData } : Context
+  ) => {
+    const { sortBy, onlyMyPosts } = args.filter || {};
+
+    const orderBy = 
+      sortBy === 'OLDEST'
+        ? { createdAt: Prisma.SortOrder.asc }
+        : sortBy === 'NEWEST'
+        ? { createdAt: Prisma.SortOrder.desc }
+        : undefined;
+
+
+    const where = {
+      isActive: true,
+      ...(onlyMyPosts && { userId: authData?.id})
+    };
+
+    const posts = await db.forumPost.findMany({
+      where,
+      orderBy,
+      include: {
+        user: true,
+        training: true,
+        comments: true,
+        _count: { select: { comments: true } },
+      }
+    });
+
+    if (sortBy === 'MOST_POPULAR') {
+      posts.sort((a, b) => b._count.comments - a._count.comments);
+    } else if (sortBy === 'LEAST_POPULAR') {
+      posts.sort((a, b) => a._count.comments - b._count.comments);
+    }
+
+    console.log(args)
+
+    return posts;
+  }
 };

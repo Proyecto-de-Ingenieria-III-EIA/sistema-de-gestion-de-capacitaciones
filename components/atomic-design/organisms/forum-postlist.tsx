@@ -1,19 +1,13 @@
-import { GET_FORUM_POSTS } from "@/graphql/frontend/forum";
-import { useQuery } from "@apollo/client";
 import { ForumPostCard } from "../molecules/forum-card";
 import { useSession } from "next-auth/react";
+import { ForumPost } from "@/types/forum-post";
 
 
-export function ForumPostList() {
-    const { data, loading, error } = useQuery(GET_FORUM_POSTS);
-    const { data: session } = useSession();
-
-    if (loading) return <p className="text-center py-8">Cargando posts...</p>;
-    if (error) return <p className="text-red-500 text-center py-8">Error al cargar los posts</p>;
+export function ForumPostList({ posts, isAdmin }: { posts: ForumPost[]; isAdmin: boolean }) {
 
     return (
         <div className="flex flex-col gap-4">
-            {data.getForumPosts.map((post: any) => (
+            {posts.map((post) => (
                 <ForumPostCard
                     key={post.id}
                     id={post.id}
@@ -22,8 +16,8 @@ export function ForumPostList() {
                     author={post.user?.name ?? "Anónimo"}
                     createdAt={post.createdAt}
                     training={post.training?.title ?? "General"}
-                    commentsCount={post.comments.length}
-                    isAdmin={session?.user.roleName === "ADMIN"}
+                    commentsCount={post._count?.comments ?? 0}
+                    isAdmin={isAdmin}
                 />
             ))}
         </div>

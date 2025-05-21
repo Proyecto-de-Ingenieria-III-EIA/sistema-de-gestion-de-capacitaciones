@@ -17,8 +17,13 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { useForumFilter } from "@/context/forum-filter-context"
+
+
 
 export function NavMain({
+
+
   items,
 }: {
   items: {
@@ -32,9 +37,12 @@ export function NavMain({
     }[]
   }[]
 }) {
+
+  const { filter, setFilter } = useForumFilter();
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Filters</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -55,10 +63,23 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
+                      <SidebarMenuSubButton
+                        onClick={ () => {
+                          const sortBy =
+                            subItem.title === "Newest First"
+                              ? "NEWEST"
+                              : subItem.title === "Oldest First"
+                              ? "OLDEST"
+                              : subItem.title === "Most Popular"
+                              ? "MOST_POPULAR"
+                              : subItem.title === "Less Popular"
+                              ? "LEAST_POPULAR"
+                              : undefined;
+
+                          setFilter({ sortBy, onlyMyPosts: false });
+                        }}
+                      >
+                        <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

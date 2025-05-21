@@ -42,6 +42,7 @@ export const enrollmentTypes = gql`
     subscribeToTraining(trainingId: String!, userId: String): Enrollment
     updateEnrollmentStatus(id: String!, status: EnrollmentStatus!): Enrollment
     deleteEnrollment(id: String!): Enrollment
+    enrollToPublicTraining(trainingId: String!): Enrollment!
   }
 
    type ParticipantProgress {

@@ -25,6 +25,28 @@ export const queries = {
     });
   },
 
+  getPublicTrainings(_: unknown, __: unknown, { db, authData }: Context) {
+    
+    return db.training.findMany({
+      where: { isPublic: true},
+      include: {
+        instructor: true,
+        materials: true,
+        assessments: {
+          include: {
+            questions: true,
+          },
+        },
+        enrollments: {
+          include: {
+            user: true,
+          },
+        },
+        forumPosts: true,
+      },
+    });
+  },
+
   getTrainingById: async (
     _: unknown,
     args: { trainingId: string },

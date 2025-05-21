@@ -93,3 +93,24 @@ export const DELETE_COMMENT = gql`
     deleteComment(id: $id)
   }
 `;
+
+export const GET_FORUM_POSTS_WITH_FILTER = gql`
+  query GetFilteredForumPosts($filter: ForumPostFilterInput) {
+    getFilteredForumPosts(filter: $filter) {
+      id
+      title
+      content
+      createdAt
+      user {
+        id
+        name
+      }
+      training {
+        title
+      }
+      _count {
+        comments
+      }
+    }
+  }
+`;

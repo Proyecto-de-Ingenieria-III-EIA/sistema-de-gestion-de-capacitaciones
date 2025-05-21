@@ -20,6 +20,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           label: "Dashboard",
           href: "/admin-dashboard", 
         },
+        {
+          label: "Home",
+          href: "/", 
+        },
       ];
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

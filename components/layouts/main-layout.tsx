@@ -17,10 +17,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       label: "Forum",
       href: "/forum", 
     },
-    {
-      label: "Home page",
-      href: "/",
-    }
+    // {
+    //   label: "Da",
+    //   href: "/admin-dashboard",
+    // }
   ];
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

@@ -3,7 +3,6 @@ import { validateRole } from '@/utils/validateRole';
 import { EnrollmentStatus } from '@prisma/client';
 
 export const mutations = {
-  // Enrollment mutations
   subscribeToTraining: async (
     _: unknown,
     args: { trainingId: string; userId?: string },
@@ -56,6 +55,65 @@ export const mutations = {
     });
 
     return newEnrollment;
+  },
+
+  enrollToPublicTraining: async (
+    _: unknown,
+    args: { trainingId: string },
+    { db, authData }: Context
+  ) => {
+    if (!authData) {
+      throw new Error('Unauthorized');
+    }
+
+    const userId = authData.id;
+
+    const training = await db.training.findUnique({
+      where: { id: args.trainingId },
+      select: { id: true, isPublic: true },
+    });
+
+    if (!training) {
+      throw new Error('Training not found');
+    }
+
+    if (!training.isPublic) {
+      throw new Error('You can only enroll in public trainings');
+    }
+    const alreadyEnrolled = await db.enrollment.findFirst({
+      where: {
+        trainingId: args.trainingId,
+        userId: userId,
+      },
+    });
+
+    if (alreadyEnrolled) {
+      throw new Error('You are already enrolled in this training');
+    }
+
+    const enrollment = await db.enrollment.create({
+      data: {
+        trainingId: args.trainingId,
+        userId: userId,
+        status: 'APPROVED',
+      },
+      include: {
+        training: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return enrollment;
   },
 
   updateEnrollmentStatus: async (

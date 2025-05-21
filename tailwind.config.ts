@@ -11,6 +11,10 @@ export default {
   theme: {
     extend: {
       colors: {
+        strongblue: '#AFC0D4',
+        teal: '#567C8D',
+        skyblue: '#C8D9E6',
+        navy: '#2F4156',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -61,6 +65,7 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        
       },
       borderRadius: {
         lg: 'var(--radius)',

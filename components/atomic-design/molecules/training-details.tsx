@@ -102,6 +102,7 @@ export default function TrainingDetails({layout}: TrainingDetailsProps) {
           trainingId={id as string}
           renderAction={renderAction}
           canModifyAssessment={true}
+          isHidden={training?.isHidden}
         />
       </div>
     </div>

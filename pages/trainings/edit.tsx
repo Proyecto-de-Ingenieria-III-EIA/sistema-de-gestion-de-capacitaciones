@@ -191,6 +191,7 @@ export default function EditTraining() {
       <AssessmentsTable
         trainingId={trainingData.id}
         canModifyAssessment={true}
+        isHidden={trainingData.isHidden}
       />
     </Layout>
   );

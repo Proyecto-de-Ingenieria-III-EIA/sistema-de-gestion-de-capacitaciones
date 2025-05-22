@@ -32,13 +32,15 @@ interface AssessmentsTableProps {
   renderAction?: (assessment: Assessment) => React.ReactNode;
   canModifyAssessment: boolean;
   refetchProgress?: () => void;
+  isHidden: boolean;
 }
 
 export default function AssessmentsTable({
   trainingId,
   renderAction,
   canModifyAssessment,
-  refetchProgress
+  refetchProgress,
+  isHidden
 }: AssessmentsTableProps) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -356,55 +358,61 @@ export default function AssessmentsTable({
 
       {/* Add/Edit Assessment Form */}
       {canModifyAssessment && (
-        <form onSubmit={handleAddAssessment} className="mb-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Assessment Title"
-              className="flex-1 border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium">First Question:</label>
-            <input
-              type="text"
-              value={firstQuestion}
-              onChange={(e) => setFirstQuestion(e.target.value)}
-              placeholder="Enter the first question"
-              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium">
-              Options (comma-separated):
-            </label>
-            <input
-              type="text"
-              value={firstOptions.join(',')}
-              onChange={(e) => setFirstOptions(e.target.value.split(','))}
-              placeholder="Enter options"
-              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium">Correct Answer:</label>
-            <input
-              type="text"
-              value={firstAnswer}
-              onChange={(e) => setFirstAnswer(e.target.value)}
-              placeholder="Enter the correct answer"
-              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mt-4"
-          >
-            Add Assessment
-          </button>
-        </form>
+        isHidden ? (
+          <form onSubmit={handleAddAssessment} className="mb-4">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Assessment Title"
+                className="flex-1 border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">First Question:</label>
+              <input
+                type="text"
+                value={firstQuestion}
+                onChange={(e) => setFirstQuestion(e.target.value)}
+                placeholder="Enter the first question"
+                className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">
+                Options (comma-separated):
+              </label>
+              <input
+                type="text"
+                value={firstOptions.join(',')}
+                onChange={(e) => setFirstOptions(e.target.value.split(','))}
+                placeholder="Enter options"
+                className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Correct Answer:</label>
+              <input
+                type="text"
+                value={firstAnswer}
+                onChange={(e) => setFirstAnswer(e.target.value)}
+                placeholder="Enter the correct answer"
+                className="block w-full text-sm border border-gray-300 rounded-lg p-2"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mt-4"
+            >
+              Add Assessment
+            </button>
+          </form>
+        ) : (
+          <p className="text-red-500 mb-4">
+            You can only create assessments when the training is hidden.
+          </p>
+        )
       )}
 
       {/* Assessments List */}
@@ -572,27 +580,31 @@ export default function AssessmentsTable({
                                 {q.answer}
                               </td>
                               <td className='border border-gray-300 px-4 py-2 flex gap-2'>
-                                <button
-                                  onClick={() => {
-                                    setEditingQuestionId(q.id);
-                                    setQuestion(q.question);
-                                    setOptions(q.options);
-                                    setAnswer(q.answer);
-                                  }}
-                                  className='text-yellow-500 hover:text-yellow-700'
-                                >
-                                  <PencilIcon className='w-5 h-5' />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    deleteQuestion({
-                                      variables: { questionId: q.id },
-                                    })
-                                  }
-                                  className='text-red-500 hover:text-red-700'
-                                >
-                                  <TrashIcon className='w-5 h-5' />
-                                </button>
+                                {isHidden && (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setEditingQuestionId(q.id);
+                                        setQuestion(q.question);
+                                        setOptions(q.options);
+                                        setAnswer(q.answer);
+                                      }}
+                                      className='text-yellow-500 hover:text-yellow-700'
+                                    >
+                                      <PencilIcon className='w-5 h-5' />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        deleteQuestion({
+                                          variables: { questionId: q.id },
+                                        })
+                                      }
+                                      className='text-red-500 hover:text-red-700'
+                                    >
+                                      <TrashIcon className='w-5 h-5' />
+                                    </button>
+                                  </>
+                                )}
                               </td>
                             </tr>
                           ))}
@@ -603,55 +615,61 @@ export default function AssessmentsTable({
                     )}
 
                     {/* Add Question Form */}
-                    <form onSubmit={handleAddQuestion} className='mt-4'>
-                      <div className='mb-2'>
-                        <label className='block text-sm font-medium'>
-                          Question:
-                        </label>
-                        <input
-                          type='text'
-                          value={question}
-                          onChange={(e) => setQuestion(e.target.value)}
-                          placeholder='Enter question'
-                          className='block w-full text-sm border border-gray-300 rounded-lg p-2'
-                        />
-                      </div>
-                      <div className='mb-2'>
-                        <label className='block text-sm font-medium'>
-                          Options (comma-separated):
-                        </label>
-                        <input
-                          type='text'
-                          value={options.join(',')}
-                          onChange={(e) =>
-                            setOptions(e.target.value.split(','))
-                          }
-                          placeholder='Enter options'
-                          className='block w-full text-sm border border-gray-300 rounded-lg p-2'
-                        />
-                      </div>
-                      <div className='mb-2'>
-                        <label className='block text-sm font-medium'>
-                          Answer:
-                        </label>
-                        <input
-                          type='text'
-                          value={answer}
-                          onChange={(e) => setAnswer(e.target.value)}
-                          placeholder='Enter correct answer'
-                          className='block w-full text-sm border border-gray-300 rounded-lg p-2'
-                        />
-                      </div>
-                      <button
-                        type='submit'
-                        className={`px-4 py-2 ${editingQuestionId
+                    {isHidden ? (
+                      <form onSubmit={handleAddQuestion} className='mt-4'>
+                        <div className='mb-2'>
+                          <label className='block text-sm font-medium'>
+                            Question:
+                          </label>
+                          <input
+                            type='text'
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            placeholder='Enter question'
+                            className='block w-full text-sm border border-gray-300 rounded-lg p-2'
+                          />
+                        </div>
+                        <div className='mb-2'>
+                          <label className='block text-sm font-medium'>
+                            Options (comma-separated):
+                          </label>
+                          <input
+                            type='text'
+                            value={options.join(',')}
+                            onChange={(e) =>
+                              setOptions(e.target.value.split(','))
+                            }
+                            placeholder='Enter options'
+                            className='block w-full text-sm border border-gray-300 rounded-lg p-2'
+                          />
+                        </div>
+                        <div className='mb-2'>
+                          <label className='block text-sm font-medium'>
+                            Answer:
+                          </label>
+                          <input
+                            type='text'
+                            value={answer}
+                            onChange={(e) => setAnswer(e.target.value)}
+                            placeholder='Enter correct answer'
+                            className='block w-full text-sm border border-gray-300 rounded-lg p-2'
+                          />
+                        </div>
+                        <button
+                          type='submit'
+                          className={`px-4 py-2 ${editingQuestionId
                             ? 'bg-yellow-500 hover:bg-yellow-700'
                             : 'bg-green-500 hover:bg-green-700'
-                          } text-white rounded`}
-                      >
-                        {editingQuestionId ? 'Edit Question' : 'Add Question'}
-                      </button>
-                    </form>
+                            } text-white rounded`}
+                        >
+                          {editingQuestionId ? 'Edit Question' : 'Add Question'}
+                        </button>
+                      </form>
+                    ) : (
+                      <p className="text-red-500 mt-4">
+                        You can only add or edit questions when the training is hidden.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

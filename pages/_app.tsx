@@ -10,6 +10,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ApolloProvider } from '@apollo/client';
 import client from '@/apollo-client';
 import { Toaster } from '@/components/ui/sonner';
+import { ForumFilterProvider } from '@/context/forum-filter-context';
 
 const AppWrapper = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -23,17 +24,21 @@ const AppWrapper = ({ Component, pageProps }: AppProps) => {
   const getLayout = () => {
     if (!currentRoute?.isPublic) {
       return (
-        <SessionProvider>
-          <PrivateLayout>
-            <Component {...pageProps} />
-          </PrivateLayout>
-        </SessionProvider>
+        <ForumFilterProvider>
+          <SessionProvider>
+            <PrivateLayout>
+              <Component {...pageProps} />
+            </PrivateLayout>
+          </SessionProvider>
+        </ForumFilterProvider>
       );
     }
     return (
-      <PublicLayout>
-        <Component {...pageProps} />
-      </PublicLayout>
+      <ForumFilterProvider>
+        <PublicLayout>
+          <Component {...pageProps} />
+        </PublicLayout>
+      </ForumFilterProvider>
     );
   };
 
@@ -87,7 +92,7 @@ const AppWrapper = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       {getLayout()}
-      <Toaster richColors position="top-right" />
+      <Toaster richColors position='top-right' />
     </ApolloProvider>
   );
 };

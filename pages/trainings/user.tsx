@@ -99,6 +99,7 @@ export default function TrainingDetailsForUser() {
             trainingId={id as string}
             canModifyAssessment={false}
             refetchProgress={refetchProgress}
+            isHidden={training?.isHidden}
           />
         </div>
       </div>

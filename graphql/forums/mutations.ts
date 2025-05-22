@@ -37,8 +37,9 @@ export const mutations = {
   deleteForumPost: async (
     _: unknown,
     args: { id: string },
-    { db }: Context
+    { db, authData }: Context
   ) => {
+    await validateRole(db, authData, ['ADMIN']);
     await db.forumPost.delete({ where: { id: args.id } });
     return true;
   },
@@ -55,6 +56,9 @@ export const mutations = {
         userId: args.userId,
         forumPostId: args.forumPostId,
       },
+      include: {
+        user: true
+      }
     }),
 
   deleteComment: async (

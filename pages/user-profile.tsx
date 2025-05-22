@@ -1,6 +1,7 @@
 import UserProfileDetails from '@/components/atomic-design/molecules/user-profile/details';
 import UserProfileHeader from '@/components/atomic-design/molecules/user-profile/header';
 import UserProfileStats from '@/components/atomic-design/molecules/user-profile/stats';
+import UserProfileTrainings from '@/components/atomic-design/molecules/user-profile/trainings';
 import MainLayout from '@/components/layouts/main-layout';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -22,6 +23,8 @@ export default function UserProfilePage() {
             />
             <Separator />
             <UserProfileStats />
+            <Separator />
+            <UserProfileTrainings/>
           </div>
         </Card>
       </div>

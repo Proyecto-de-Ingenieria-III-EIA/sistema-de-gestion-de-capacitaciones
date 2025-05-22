@@ -15,6 +15,9 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import { NavUser } from "../molecules/nav-user";
+import { House, LayoutDashboard } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface DropdownItem {
   name: string;
@@ -37,20 +40,25 @@ interface HeaderProps {
 
 export default function Header({ buttons, firstLinkHref }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
-    <header className="bg-white">
+    <header className="bg-skyblue">
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <Link href={firstLinkHref}>
-              <Image
-                src="https://1000marcas.net/wp-content/uploads/2023/11/Temu-Logo.png"
-                alt="Company Logo"
-                width={40}
-                height={40}
-                className="h-8 w-auto"
-              />
-          </Link>
+          {pathname !== "/" && (
+            <Link href={firstLinkHref} className="grid grid-cols-1 ml-5 text-teal justify-items-center">
+              <House width={40} height={40} color="teal" />
+              <p>Home</p>
+            </Link>
+          )}
+          {pathname == "/" && session?.user.roleName === "ADMIN" && (
+            <Link href="/admin-dashboard" className="grid grid-cols-1 ml-5 text-teal justify-items-center">
+              <LayoutDashboard width={40} height={40} color="teal" />
+              <p>Dashboard</p>
+            </Link>
+          )}
         </div>
         <div className="flex lg:hidden">
           <Button
@@ -117,13 +125,12 @@ export default function Header({ buttons, firstLinkHref }: HeaderProps) {
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <Link href="/">
-                <Image
-                  src="https://1000marcas.net/wp-content/uploads/2023/11/Temu-Logo.png"
-                  alt="Company Logo"
-                  width={40}
-                  height={40}
-                  className="h-8 w-auto"
-                />
+                <House
+                width={40}
+                height={40}
+                color="teal"
+                className="ml-5"
+              />
             </Link>
             <Button
               onClick={() => setMobileMenuOpen(false)}

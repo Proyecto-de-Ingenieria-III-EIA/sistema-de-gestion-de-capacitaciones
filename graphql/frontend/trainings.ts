@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { Command as CommandPrimitive } from 'cmdk';
 
 export const GET_TRAININGS_BY_USER = gql`
   query GetTrainingsByUser($userId: String!) {
@@ -53,6 +54,32 @@ export const GET_TRAININGS = gql`
           name
           email
           area
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PUBLIC_TRAININGS = gql`
+  query GetPublicTrainingsData {
+    getPublicTrainings {
+      id
+      title
+      description
+      isPublic
+      imageSrc
+      instructor {
+        id
+        name
+      }
+      materials {
+        id
+        fileUrl
+      }
+      assessments {
+        id
+        questions {
+          id
         }
       }
     }

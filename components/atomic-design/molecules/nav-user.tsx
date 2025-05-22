@@ -57,14 +57,10 @@ export function NavUser () {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
-                    <Link href={`/profile/user?id=${session?.user?.id}`} passHref legacyBehavior>
-                        <DropdownMenuItem asChild>
-                        <a>
-                            <Sparkles />
-                            Profile
-                        </a>
-                        </DropdownMenuItem>
-                    </Link>
+                  <DropdownMenuItem onClick={() => router.push(`/user-profile`)}>
+                    <Sparkles />
+                    Profile
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
 
                 <DropdownMenuSeparator />

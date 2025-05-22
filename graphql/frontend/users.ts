@@ -74,6 +74,7 @@ export const GET_PROGRESS_IN_TRAININGS = gql`
 `;
 
 
+
 export const UPDATE_USER = gql`
   mutation updateUser(
     $id: String!

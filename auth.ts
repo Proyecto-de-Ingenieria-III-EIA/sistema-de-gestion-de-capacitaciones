@@ -27,7 +27,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           include: { role: true },
         });
 
-        session.user.roleName = user?.role.name
+        const dbSession = await prisma.session.findFirst({
+          where: { user: { email: session.user.email!}},
+          orderBy: { expires: 'desc' },
+        });
+
+        session.user.roleName = user?.role.name;
+        session.sessionToken = dbSession?.sessionToken ?? "";
       }
       return session;
     }

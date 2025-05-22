@@ -12,7 +12,12 @@ export const forumTypes = gql`
     comments: [Comment]
     createdAt: DateTime
     updatedAt: DateTime
+    _count: ForumPostCount
   }
+
+  type ForumPostCount {
+  comments: Int!
+}
 
   type Comment {
     id: String!
@@ -23,11 +28,24 @@ export const forumTypes = gql`
     updatedAt: DateTime
   }
 
+  input ForumPostFilterInput {
+    sortBy: ForumPostSort
+    onlyMyPosts: Boolean
+  }
+
+  enum ForumPostSort {
+    NEWEST
+    OLDEST
+    MOST_POPULAR
+    LEAST_POPULAR
+  }
+
   ## Queries
   type Query {
     # Forum
     getForumPosts: [ForumPost]
     getForumPostById(id: String!): ForumPost
+    getFilteredForumPosts(filter: ForumPostFilterInput): [ForumPost]
   }
 
   ## Mutations

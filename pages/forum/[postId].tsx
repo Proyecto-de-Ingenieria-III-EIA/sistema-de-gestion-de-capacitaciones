@@ -64,6 +64,7 @@ export default function ForumPostPage() {
 
     return (
         <div className="max-w-3xl mx-auto p-4 space-y-6">
+            <Button onClick={()=> router.push('/forum')}>Go back</Button>
             <ForumPostCard
                 id={post.id}
                 title={post.title}
